@@ -1,4 +1,4 @@
-# C-
+# C++ smallberg spring 2018
 
 p1 compile vs logic error
 
