@@ -1,0 +1,247 @@
+Spring 2018 CS 31
+Programming Assignment 4
+Array? Hooray!
+Time due: 11:00 PM Monday, May 14
+As you gain experience with arrays, you'll discover that many applications do the same kinds of things with them (e.g., find where an item is in an array, or check whether two arrays differ). You'll find that it's helpful to have a library of useful functions that manipulate arrays. (For our purposes now, a library is a collection of functions that developers can call instead of having to write them themselves. For a library to be most useful, the functions in it should be related and organized around a central theme. For example, a screen graphics library might have functions that allow you to draw shapes like lines and circles on the screen, move them around, fill them with color, etc. In this view, the Standard C++ library is really a collection of libraries: a string library, a math library, an input/output library, and much more.)
+Your assignment is to produce a library that provides functions for many common manipulations of arrays of strings. For example, one function will find where a string occurs in an unordered array of strings. Another will change the order of strings in an array. For each function you must write, this specification will tell you its interface (what parameters it takes, what it returns, and what it must do). It's up to you to decide on the implementation (how it will do it).
+The source file you turn in will contain all the functions and a main routine. You can have the main routine do whatever you want, because we will rename it to something harmless, never call it, and append our own main routine to your file. Our main routine will thoroughly test your functions. You'll probably want your main routine to do the same. If you wish, you may write functions in addition to those required here. We will not directly call any such additional functions. If you wish, your implementation of a function required here may call other functions required here.
+The program you turn in must build successfully, and during execution, no function (other than main) may read anything from cin or write anything to cout. If you want to print things out for debugging purposes, write to cerr instead of cout. When we test your program, we will cause everything written to cerr to be discarded instead — we will never see that output, so you may leave those debugging output statements in your program if you wish.
+All of the functions you must write take at least two parameters: an array of strings, and the number of items the function will consider in the array, starting from the beginning. For example, in
+	string folks[8] = {
+		"parker", "thor", "stark", "romanoff",
+		"banner", "tchalla", "rhodes", "rogers"
+	};
+	int i = findMatch(folks, 5, "rogers");  // should return -1 (not found)
+even though the array has 8 elements, only the first 5 had values we were interested in for this call to the function; the function must not examine the others.
+Notwithstanding each function's behavior described below, all functions that return an int must return −1 if they are passed any bad arguments (e.g. a negative array size, or a position that would require looking at the contents of an element past the last element we're interested in). Unless otherwise noted, passing 0 to the function as the array size is not itself an error; it merely indicates the function should examine no elements of the array.
+The one error your function implementations don't have to handle, because they can't, is when the caller of the function lies and says the array is bigger than it really is. For example, in this situation, the function findMatch can't possibly know that the caller is lying about the number of interesting items in the array:
+	string people[5] = { "parker", "thor", "stark", "banner", "romanoff" };
+	int i = findMatch(people, 25, "rogers");  // Bad call of function, but
+		// your findMatch implementation doesn't have to check for
+		// this, because it can't.
+To make your life easier, whenever this specification talks about strings being equal or about one string being less than or greater than another, the case of letters matters. This means that you can simply use comparison operators like == or < to compare strings. Because of the character collating sequence, all upper case letters come before all lower case letters, so don't be surprised. The FAQ has a note about string comparisons.
+Here are the functions you must implement:
+int tally(const string a[], int n, string target);
+Return the number of strings in the array that are equal to target. [Of course, in this and other functions, if n is negative, the paragraph above that starts "Notwithstanding" trumps this by requiring that the function return −1. Also, in the description of this function and the others, when we say "the array", we mean the n elements that the function is aware of.] As noted above, case matters: Do not consider "thor" to be equal to "ThoR". Here's an example:
+string d[9] = {
+    "thor", "romanoff", "parker", "parker", "stark", "stark", "stark", "parker", "parker"
+};
+int i = tally(d, 9, "parker");  // returns 4
+int j = tally(d, 5, "stark");  // returns 1
+int k = tally(d, 9, "tchalla");  // returns 0
+
+
+int findMatch(const string a[], int n, string target);
+Return the position of a string in the array that is equal to target; if there is more than one such string, return the smallest position number of such a matching string. Return −1 if there is no such string. As noted above, case matters: Do not consider "tHOR" to be equal to "Thor".
+string people[5] = { "parker", "thor", "stark", "banner", "romanoff" };
+int j = findMatch(people, 5, "banner");  // returns 3
+
+
+bool findRun(const string a[], int n, string target, int& begin, int& end);
+Find the earliest occurrence in a of one or more consecutive strings that are equal to target; set begin to the position of the first occurrence of target, set end to the last occurrence of target in that earliest consecutive sequence, and return true. If n is negative or if no string in a is equal to target, leave begin and end unchanged and return false. Here's an example:
+string d[9] = {
+    "thor", "romanoff", "parker", "parker", "stark", "stark", "stark", "parker", "parker"
+};
+int b;
+int e;
+bool b1 = findRun(d, 9, "parker", b, e);  //  returns true and
+	   //  sets b to 2 and e to 3
+bool b2 = findRun(d, 9, "romanoff", b, e); //  returns true and
+	   //  sets b to 1 and e to 1
+bool b3 = findRun(d, 9, "rogers", b, e);   //  returns false and
+	   //  leaves b and e unchanged
+
+
+int positionOfMin(const string a[], int n);
+Return the position of a string in the array such that that string is <= every string in the array. If there is more than one such string, return the smallest position of such a string. Return −1 if the array has no elements. Here's an example:
+string people[5] = { "parker", "thor", "stark", "banner", "romanoff" };
+int j = positionOfMin(people, 5);  // returns 3, since  banner  is earliest
+				   // in alphabetic order
+
+int moveToEnd(string a[], int n, int pos);
+Eliminate the item at position pos by copying all elements after it one place to the left. Put the item that was thus eliminated into the last position of the array. Return the original position of the item that was moved to the end. Here's an example:
+string people[5] = { "parker", "thor", "stark", "banner", "romanoff" };
+int j = moveToEnd(people, 5, 1);  // returns 1
+    // people now contains:  "parker"  "stark"  "banner", "romanoff"  "thor"
+
+int moveToBeginning(string a[], int n, int pos);
+Eliminate the item at position pos by copying all elements before it one place to the right. Put the item that was thus eliminated into the first position of the array. Return the original position of the item that was moved to the beginning. Here's an example:
+string people[5] = { "parker", "thor", "stark", "banner", "romanoff" };
+int j = moveToBeginning(people, 5, 2);  // returns 2
+    // people now contains:  "stark"  "parker"  "thor"  "banner", "romanoff"
+
+
+int findDifference(const string a1[], int n1, const string a2[], int n2);
+Return the position of the first corresponding elements of a1 and a2 that are not equal. n1 is the number of interesting elements in a1, and n2 is the number of interesting elements in a2. If the arrays are equal up to the point where one or both runs out, return the smaller of n1 and n2. Here's an example:
+string cast[5] = { "parker", "thor", "stark", "banner", "romanoff" };
+string roles[4] = { "parker", "thor", "tchalla", "rhodes" };
+int k = findDifference(cast, 5, roles, 4);  //  returns 2
+int m = findDifference(cast, 2, roles, 1);  //  returns 1
+
+
+int eliminateDups(string a[], int n);
+For every sequence of consecutive identical items in a, retain only one item of that sequence. Suppose we call the number of retained items r. Then when this functions returns, elements 0 through r-1 of a must contain the retained items (in the same relative order they were in originally), and the remaining elements may have whatever values you want. Return the number of retained items. Here's an example:
+string d[9] = {
+    "thor", "romanoff", "parker", "parker", "stark", "stark", "stark", "parker", "parker"
+};
+int p = eliminateDups(d, 9);  //  returns 5
+	   //  d[0] through d[4] now contain  "thor" "romanoff" "parker" "stark" "parker"
+	   //  We no longer care what strings are in d[5] and beyond.
+
+
+
+bool subsequence(const string a1[], int n1, const string a2[], int n2);
+If all n2 elements of a2 appear in a1, in the same order (though not necessarily consecutively), then return true. Return false if a1 does not contain a2 as a subsequence. (Of course, a sequence with no elements is a subsequence of any sequence.) Return false (instead of −1) if this function is passed any bad arguments. Here's an example:
+string big[10] = { "parker", "thor", "stark", "banner", "romanoff", "stark" };
+string little1[10] = { "thor", "banner", "romanoff" };
+bool b1 = subsequence(big, 6, little1, 3);  // returns true
+string little2[10] = { "stark", "thor" };
+bool b2 = subsequence(big, 6, little2, 2);  // returns false
+string little3[10] = { "thor", "stark", "stark" };
+bool b3 = subsequence(big, 6, little3, 3);  // returns true
+string little4[10] = { "thor", "thor", "stark" };
+bool b4 = subsequence(big, 6, little4, 3);  // returns false
+
+
+int makeMerger(const string a1[], int n1, const string a2[], int n2, 
+                    string result[], int max);
+If a1 has n1 elements in nondecreasing order, and a2 has n2 elements in nondecreasing order, place in result all the elements of a1 and a2, arranged in nondecreasing order, and return the number of elements so placed. Return −1 if the result would have more than max elements or if a1 and/or a2 are not in nondecreasing order. (Note: nondecreasing order means that no item is > the one that follows it.) Here's an example:
+string x[5] = { "banner", "rhodes", "rogers", "stark", "tchalla" };
+string y[4] = { "parker", "rogers", "rogers", "thor" };
+string z[20];
+int n = makeMerger(x, 5, y, 4, z, 20);  // returns 9
+	// z has  banner parker rhodes rogers rogers rogers stark tchalla thor
+
+
+int separate(string a[], int n, string separator);
+Rearrange the elements of the array so that all the elements whose value is < separator come before all the other elements, and all the elements whose value is > separator come after all the other elements. Return the position of the first element that, after the rearrangement, is not < separator, or n if there are none. Here's an example:
+string f[6] = { "rhodes", "banner", "stark", "parker", "thor", "rogers" };
+int r = separate(f, 6, "romanoff");  //  returns 4
+	// f might now be
+	//	"rhodes"  "banner"  "rogers"  "parker"  "thor"  "stark"
+	// or   "rogers"  "parker"  "banner"  "rhodes"  "stark"  "thor"
+	// or several other orderings.
+	// The first 4 elements are < "romanoff"; the last 2 aren't.
+string g[4] = { "romanoff", "rogers", "thor", "banner" };
+int s = separate(g, 4, "rogers");  //  returns 1
+	// g must now be either
+	//	"banner"  "rogers"  "romanoff"  "thor"
+	// or	"banner"  "rogers"  "thor"  "romanoff"
+	// All elements < "rogers" (i.e., "banner") come before all others.
+	// All elements > "rogers" (i.e., "thor" and "romanoff") come
+	//      after all others.
+For each of the functions moveToEnd, moveToBeginning, eliminateDups, makeMerger, and separate, if the function is correctly implemented, you will earn one bonus point for that function if it does its job without creating any additional array.
+Your program must not use any function templates from the algorithms portion of the Standard C++ library. If you don't know what the previous sentence is talking about, you have nothing to worry about.
+Your implementations must not use any global variables whose values may be changed during execution.
+Your program must build successfully under both g31 and either Visual C++ or clang++.
+The correctness of your program must not depend on undefined program behavior. Your program could not, for example, assume anything about t's value in the following, or even whether or not the program crashes:
+	int main()
+	{
+	    string s[3] = { "stark", "tchalla", "banner" };
+	    string t = s[3];  // position 3 is out of range
+	    …
+What you will turn in for this assignment is a zip file containing these two files and nothing more:
+1.	A text file named array.cpp that contains the source code for your C++ program. Your source code should have helpful comments that explain any non-obvious code.
+2.	A file named report.docx or report.doc (in Microsoft Word format), or report.txt (an ordinary text file) that contains:
+a.	A brief description of notable obstacles you overcame.
+b.	A list of the test data that could be used to thoroughly test your functions, along with the reason for each test. You must note which test cases your program does not handle correctly. (This could happen if you didn't have time to write a complete solution, or if you ran out of time while still debugging a supposedly complete solution.) Notice that most of this portion of your report can be written just after you read the requirements in this specification, before you even start designing your program.
+How nice! Your report this time doesn't have to contain any design documentation.
+As with Project 3, a nice way to test your functions is to use the assert facility from the standard library. As an example, here's a very incomplete set of tests for Project 4:
+	#include <iostream>
+	#include <string>
+	#include <cassert>
+
+	using namespace std;
+
+	int main()
+	{
+	    string h[7] = { "romanoff", "thor", "rogers", "banner", "", "parker", "rogers" };
+	    assert(tally(h, 7, "rogers") == 2);
+	    assert(tally(h, 7, "") == 1);
+	    assert(tally(h, 7, "rhodes") == 0);
+	    assert(tally(h, 0, "rogers") == 0);
+	    assert(findMatch(h, 7, "rogers") == 2);
+	    assert(findMatch(h, 2, "rogers") == -1);
+	    int bg;
+	    int en;
+	    assert(findRun(h, 7, "banner", bg, en) && bg == 3 && en == 3);
+
+	    string g[4] = { "romanoff", "thor", "banner", "parker" };
+	    assert(positionOfMin(g, 4) == 2);
+	    assert(findDifference(h, 4, g, 4) == 2);
+	    assert(subsequence(h, 7, g, 4));
+	    assert(moveToEnd(g, 4, 1) == 1 && g[1] == "banner" && g[3] == "thor");
+	
+	    string f[4] = { "parker", "banner", "thor", "rogers" };
+	    assert(moveToBeginning(f, 4, 2) == 2 && f[0] == "thor" && f[2] == "banner");
+	
+	    string e[5] = { "parker", "parker", "parker", "thor", "thor" };
+	    assert(eliminateDups(e, 5) == 2 && e[1] == "thor");
+	
+	    string x[4] = { "rhodes", "rhodes", "tchalla", "thor" };
+	    string y[4] = { "banner", "parker", "rhodes", "rogers" };
+	    string z[10];
+	    assert(makeMerger(x, 4, y, 4, z, 10) == 8 && z[5] == "rogers");
+	
+	    assert(separate(h, 7, "rogers") == 3);
+	
+	    cout << "All tests succeeded" << endl;
+	}
+The reason for the one line of output at the end is to ensure that you can distinguish the situation of all tests succeeding from the case where one test silently crashes the program.
+Make sure that if you were to replace your main routine with the one above, your program would build successfully under both g31 and either Visual C++ or clang++. (This means that even if you haven't figured out how to implement some of the functions, you must still have some kind of implementations for them, even if those implementations do nothing more than immediately return, say, 42.) If the program built with that main routine happens to run successfully, you'll probably get a pretty good correctness score.
+By May 13, there will be links on the class webpage that will enable you to turn in your zip file electronically. Turn in the file by the due time above. Give yourself enough time to be sure you can turn something in, because we will not accept excuses like "My network connection at home was down, and I didn't have a way to copy my files and bring them to a SEASnet machine." There's a lot to be said for turning in a preliminary version of your program and report early (You can always overwrite it with a later submission). That way you have something submitted in case there's a problem later.
+
+
+
+Project 4 FAQ
+1.	I don't know where to begin. What can I do?
+Throw away a mindset that says you have to figure out how all the functions will work before you type in any code. Start with one function and get that working — that will clear up a lot of misconceptions you may have.
+If you're really stuck, start with this program that solves a problem that is different, but related, and mutate it into what you want:
+        #include <iostream>
+        #include <string>
+        #include <cassert>
+        using namespace std;
+
+          // Return the position of the first element that is not <= the one
+	  // that follows it.  Return −1 if there are no such elements.
+        int findFirstDisorder(const string a[], int n)
+        {
+            for (int k = 0; k < n-1; k++)
+	        if (a[k] > a[k+1])
+		    return k;
+            return -1;
+        }
+
+        int main()
+        {
+            string h[5] = { "cheryl", "cyril", "sterling", "malory", "lana" };
+            assert(findFirstDisorder(h, 5) == 2);
+            assert(findFirstDisorder(h, 4) == 2);
+            assert(findFirstDisorder(h, 3) == -1);
+            assert(findFirstDisorder(h, 2) == -1);
+            assert(findFirstDisorder(h, 1) == -1);
+            assert(findFirstDisorder(h, 0) == -1); // No disorder in empty array
+              // There should be another test that passes a bad argument
+            cout << "All tests succeeded" << endl;
+        }
+2.	I get apparently random results when I try to run some little tests of the comparison operators on strings. For example, a test like "abcde" < "abcxyz" sometimes returns false. What's going on?
+To get meaningful results, make sure that at least one of the two objects you are comparing are declared to be of the string type, like s, t, a[0], and a[1] below:
+string s = "hello";
+string t = "help";
+string a[2] = { "helping", "hello" };
+The following are all true:
+        s < t           // The h's, e's, and first l's match, but s has
+                        // an 'l' where t has a 'p', and 'l' < 'p'.
+        s < "help"      // True for the same reason.
+        t < a[0]        // The first four characters match, then t runs
+                        // out while a[0] has more.
+        "help" < a[0]   // True for the same reason.
+        s == a[1]       // All 5 characters match, and both strings end at
+                        // the same time.
+        s == "hello"    // True for the same reason
+What you cannot do predictably is compare two character string literals: "hello" < "help" may be true or false. A test like this unfortunately will compile. For technical reasons, what are being compared are not the characters in the literals, but the addresses at which the literals are stored, so the result depends on where the compiler chooses to place the two.
+3.	Blah blah blah should I set it to the empty string?
+There is absolutely nothing in the spec that specially distinguishes the empty string (i.e., the string ""). For example, eliminateDups doesn't set anything to the empty string,findMatch doesn't treat the empty string as an error, etc. The empty string is just another string, no more special than "rogers" or "tchalla".
+4.	What should my functions do if n equals 0? N<=0?
+The spec says: Unless otherwise noted, passing 0 to the function as the array size is not itself an error; it merely indicates the function should examine no elements of the array. So do what makes sense. For example, tallying all elements of an empty array (i.e., one where n is 0) that match a particular value returns zero, because there are none; that's not an error. If asked to move an element in an empty array (which, being empty, has no valid element positions) to the end of that array, that's as much an error as being asked to move the element at position 8 in a 5-element array, because in both cases there is no element that the function knows about at the indicated position, so the function would return −1. The spec tells you that a sequence with no elements is a subsequence of every sequence (even another one with no elements).
+

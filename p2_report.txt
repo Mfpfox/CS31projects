@@ -1,0 +1,13 @@
+report for homework 2
+
+notable obstacles I overcame:
+I realized that the && and || are trickier than I origianlly thought.  So I initially tried to make my program with (productName != pigs || productName != mud) and realized this always evaluates to true.  Another tricky thing was reading the assignment and interpretting where the boundaries should be.  Overall the math was no too difficult once I new what the boundaries needed to be and how to phrase the pigs or mud question first before the next statement in the if-else ladder.  
+
+inputs I used to test my program:
+I tested all the boundary cases 1st
+product = pigs. value = 0, 500, 501, 899, 900, 901
+product = mud. value = 0, 500, 501, 899, 900, 901
+product = bunnies. value = 0, 500, 501, 899, 900, 901
+//the reason I choose to mainly check all the boundaries is because if my program was flawed I believe it would most likely mess up at one of these inputs.  I also made sure pigs, mud, and any other input for product gave me the correct duty number. 
+I compared all the values to the calculator to check and believe my program doesnt have any problems...at least none that I found. 
+

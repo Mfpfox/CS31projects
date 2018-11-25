@@ -1,0 +1,293 @@
+NOTABLE OBSTACLES:
+-realizing the importance of naming variables. I used max to represent size of result array (10,000) and confused size with amount filled (interesting elements in result), which took 2 hours to debug. 
+
+-moving index to account for how function was shifting things.  In seperatate function, I call moveToEnd, and when this happens you much move index back and then forward to check the new string at the position where moveToEnd was called.  
+	-same for eliminateDups function
+
+-coding the functions with extra arrays, and then changing to not need an extra array to complish task and hopefully get extra credit. 
+
+-calling already made functions in functions i was making, or adjusting a built function like positionOfMin to be more tailored for another function (like positionMin called in makeMerger)
+
+-calling arrays properly, not using a1[], but rather a1
+
+-understanding what the spec was saying regarding when to return -1 for bad argument and when n = 0 is not a bad argument
+
+
+
+
+
+TEST CASES FOR FUNCTIONS: TOTAL 16 (11 required)
+I WAS NOT ABLE TO FIND ERROR IN HOW FUNCTIONS HANDLE CASES...
+
+***int tally(const string a[], int n, string target);
+
+    string h[10] = {"romanoff", "thor", "rogers", "banner", "", "parker", "rogers", "Thor", "Rogers", "Banner"};
+    assert(tally(h, 7, "rogers") == 2);
+    assert(tally(h, 0, "") == 0); //0 because 0 items to search
+    assert(tally(h, 10, "Banner") == 1);
+    assert(tally(h, 2, "rogers") == 0); //test is size works
+    assert(tally(h, 10, "Maria") == 0);
+    assert(tally(h, 10, "THor") == 0);
+    assert(tally(h, 1, "romanoff") == 1);
+    assert(tally(h, -1, "romanoff") == -1);//testing precondition
+
+***int findMatch(const string a[], int n, string target);
+
+    string f[10] = {"bun bun", "Bun Bun", "bun", "bun", "maria f", "mariA f", "bUn", "", "mAria", "maria F"};
+    string so[11]; //testing what happens when base type string array not initialized = automatically empty string at index variables
+    assert(findMatch(so, 11, "") == 0);
+    assert(findMatch(so, 11, " ") == -1); //testing not found returns -1
+    assert(findMatch(so, 0, "") == -1);
+    //no initializers automatically the empty string
+    assert(findMatch(f, 10, "bun") == 2); //testing if multiple matches, returns earliest position
+    assert(findMatch(f, 10, "Bun Bun") == 1);
+    assert(findMatch(f, 1, "bun bun") == 0); //testing size
+    assert(findMatch(f, 4, "maria f") == -1); //not found
+    assert(findMatch(f, 8, "") == 7); //testing size
+    assert(findMatch(f, 8, "will") == -1);
+    assert(findMatch(f, -8, "") == -1); //testing precondition that size not be negative
+
+
+***bool findRun(const string a[], int n, string target, int& begin, int& end);
+
+    int bg = -5; //initilizing so that I can notice if they change
+    int en = -5;
+    
+    string g[11] = {"star", "star", "Star", "triangle", "triangE", "circle", "circle", "circle","cir", "", "" };
+    
+    string s[11]; //testing uninitialized array size 11
+    
+    //testing false cases
+    bool b0 = findRun(s, 11, "n", bg, en);  //no change in bg and en because n not found
+    cout << "b0 = " << b0 << "  begin = " << bg << "  end = " <<  en << endl;
+    //also tested with above bool b0 if s[11] with no initializers is automatically set to empty string elements.  yes, begin is 0 and end is 10.
+    
+    bool b1 = findRun(g, -2, "Star", bg, en); //bad argument
+    cout << b1 << bg << en << endl;
+    bool b2 = findRun(g, 8, "Circle", bg, en); //capital C not found
+    cout << b2 << bg << en << endl;
+    bool b3 = findRun(g, 0, "circle", bg, en); //testing searching 0 elements
+    cout << b3 << bg << en << endl;
+    
+    //testing true cases, bg and en now should change to position of start and end of run
+    assert(findRun(g, 8, "star", bg, en) && bg == 0 && en == 1); //two of target in position 0 and 1
+    assert(findRun(g, 3, "Star", bg, en) && bg == 2 && en == 2); //testing run size of 1 element
+    assert(findRun(g, 8, "circle", bg, en) && bg == 5 && en == 7);
+    assert(findRun(g, 7, "circle", bg, en) && bg == 5 && en == 6); //recongnizes SIZE as n
+    assert(findRun(g, 11, "circle", bg, en) && bg == 5 && en == 7); //testing run of 3 elements
+    assert(findRun(g, 11, "cir", bg, en) && bg == 8 && en == 8); //testing run size of 1 element
+    assert(findRun(g, 11, "", bg, en) && bg == 9 && en == 10); //handles end cases
+
+
+
+
+***int positionOfMin(const string a[], int n);
+
+    string m[12] = {"bAt", "bat", "pple", "pple", "Cat", "apple", "Dog", "sad", "hello", "hell", "appl", "Bpp"};
+
+    string ma[3]; //testing case of uninitialized array
+    int test = (positionOfMin(m, 12));
+    cout << "position of min = " << test << endl;
+    string result = m[test];
+    cout << "min result = " << result << endl;
+    int test2 = (positionOfMin(ma, 3));
+    cout << "position of min in uninitialized array is = " << test2 << endl;
+
+    string mb[12] = {"hello", "hella", "hella", "pple", "Cat", "apple", "Dog", "sad", "Applesauce", "App", "", "A"};
+
+    assert(positionOfMin(mb, 5) == 4); //testing capital come first
+    assert(positionOfMin(mb, 3) == 1);//testing if 2 equal, returns smallest position
+    assert(positionOfMin(mb, 7) == 4);
+    assert(positionOfMin(mb, 12) == 10); //empty string is before all other cases as minimum
+    assert(positionOfMin(mb, 0) == -1); //spec specification, 0 elements
+    assert(positionOfMin(mb, -1) == -1); //bad argument
+
+***int moveToEnd(string a[], int n, int pos);
+   
+    string move[10] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"};
+
+    int j = moveToEnd(move, 10, 0); //moves pos 0 to the end
+    cout << "Position of string moved is: " << j << endl;
+    //used loop to print out all index variables and check that move was successful
+    for(int i = 0; i < 10; i++)
+        cout << move[i] << ", ";
+    cout << endl;
+    
+    //had to comment out asserts unless testing because function changes array
+    
+    //assert(moveToEnd(move, 10, 0) == 0 && move[0] == "b" && move[9] == "a"); //moved first position to last
+    //assert(moveToEnd(move, 3, 3) == -1); //undefined position, returns -1
+    //assert(moveToEnd(move, 5, 1) == 1 && move[1] == "c" && move[4] == "b"); //testing size
+    //assert(moveToEnd(move, 2, 1) == 1 && move[1] == "b" && move[0] == "a"); //handles case where position to be moved is already at the end of declared size
+    
+    //assert(moveToEnd(move, 7, 5) == 5 && move[5] == "g" && move[6] == "f"); //handles moving one element left case
+
+
+***int moveToBeginning(string a[], int n, int pos);
+
+    //just like in moveToEnd, testing what happens when pos is already at beginning, if it recognizes size, if it handles end cases, middle move cases, and pos 1 move cases, also if error size = 0
+
+    string mave[10] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"};
+
+    int j = moveToBeginning(mave, 0, 1);
+
+    cout << "Position of string moved is: " << j << endl;
+    for(int i = 0; i < 10; i++)
+        cout << mave[i] << ", ";
+   cout << endl;
+
+***int findDifference(const string a1[], int n1, const string a2[], int n2);
+
+    //int findDifference(const string a1[], int n1, const string a2[], int n2)
+
+    string a1[10] = {"bAt", "bat", "pple", "pple", "Cat", "apple", "Dog", "Sad", "hello", "hell"};
+
+    string a2[10] = {"bAt", "bat", "pple", "pple", "Cat", "apple", "Dog", "sad", "hello", "hell"};
+
+    //tested size, equal until on array runs out, equal entirely, difference at position 0, difference at last position of one array
+
+    //assert(findDifference(a1,10, a2, 10) == 2); //change a2 "ppe"
+    //assert(findDifference(a1,10, a2, 5) == 5); //no differences just n2 runs out
+    //assert(findDifference(a1,10, a2, 10) == 0); //changed a2[0] "At"
+    //assert(findDifference(a1,5, a2, 5) == 4); //changed cat to at
+   //assert(findDifference(a1,10, a2, 10) == 7); //changed sad to Sad
+   assert(findDifference(a1,0, a2, 10) == -1); //error because cant compare two positions if size of one array is declared 0
+    assert(findDifference(a1,10, a2, -1) == -1); //testing bad argument
+
+    string a3[10] = {"bAt", "bat", "pple", "pple", "Cat", "apple", "Dog", "Sad", "hello", "hell"};
+
+    string a4[5] = {"bAt", "bat", "pple", "pple", "cat"};
+    //assert(findDifference(a3, 10, a4, 10) == 0); //bat
+    assert(findDifference(a3, 10, a4, 5) == 4); // cat Cat
+    //assert(findDifference(a3, 10, a4, 5) == 5); //returns smaller n, made arrays equal up to a4 running out
+
+***int eliminateDups(string a[], int n);
+
+
+    //int eliminateDups(string a[], int n)
+    //checked precondition that n is not < = 0, bad arguments
+
+    //changed string for each test
+
+    string dup[10] = {"aa", "aa", "aa", "a", "e", "aa", "aa", "afa", "aa", "afa"};
+
+    //tested 4 replicates at end to see how handles end of declared size cases
+    //tested size of array 1, returned 1
+    //tested replicated at beginning
+    
+    int dups = eliminateDups(dup, 10);
+    cout << "Retained size is: " << dups << endl;
+    for(int i = 0; i < 10; i++) //printed the original declared size to see how elements shift
+        cout << dup[i] << ", ";
+    cout << endl;
+
+
+
+
+***bool subsequence(const string a1[], int n1, const string a2[], int n2);
+ -return false for bad arguments are either array size are less than 0, if n1 == 0 (all elements of a2 n2 must be in a1)
+ -n2 can not be > n1
+ -if n2 == 0 return true because "a sequence with no elements is a subsequence of any sequence"
+
+***int findSub(const string a1[], int n1, string target, int start);
+//this function is called in subsequence function.  if takes the updated index (one position after the last found element in a1 (matches a2)
+//preconditions same as subsequence function
+//if element not found returns -1
+//if found returns the position of found element in a1
+//tested by finding some elements not all. checking if index updated correctly to +1 after last found element. 
+
+//TESTING bool subsequence
+   string a15[12] = {"will", "thor", "stark", "thor", "maria", "bun", "h", "thor", "ban"};
+
+   string a25[9] = {"thor", "maria", "bun", ""};
+
+    bool sub;
+    sub = subsequence(a15, 12, a25, 4);
+    if(sub)
+        cout << "a2 IS a subsequence of a1" << endl;
+    else
+        cout << "a2 is NOT a subsequence of a1" << endl;
+
+    CASES:
+    -adjusting size of a1 and a2 to test preconditions
+    -tested n2 == 0 returns true
+    -tested if duplicates in a2 but only one copy in a1 worked
+    -tested order of elements in a2 not same as a1 = false
+    -tested found elements in last position and found in first position of a1    
+
+
+***int makeMerger(const string a1[], int n1, const string a2[], int n2, string result[], int max);
+-test preconditions: n1 or n2 < 0 return -1, if a1 or a2 not in nondecreasing order return -1, test if a1 and a2 are in nondecreasing order but combined elements wont fit in result array return -1 
+-returns the total elements of a1 and a2 added to result array
+-first got bool nondecreasing up and running along with fillArray
+	-tested if n1 or n2 was 0 
+	-tested different sizes of a1 and a2 to confirm only adding interesting elements to result array
+	-tested if n1 and n2 are 0 = return 0
+	-tested adding all elements of a1 and a2
+	-tested if result size < combined size of a1 and a2 return -1
+	-tested if return -1 for a1 or a2 returning false for nondecreasing function
+
+    string a5[9] = {"a", "a", "b", "c", "d", "e", "f", "g", "h"};
+    string a6[4] = {"A", "B", "C", "D"};
+    const int MAX = 10000;
+    string z[MAX];
+    int merger = makeMerger(a5, 9, a6, 4, z, MAX);
+    cout << "return value: " << merger << endl;
+    for(int i = 0; i < merger; i++)
+        cout << z[i] << " , ";
+    cout << endl;
+
+
+ADDITIONAL FUNCTIONS FOR makeMerger: TESTING FOR THESE DONE IN makeMerger function
+***bool nondecreasing(const string a[], int n);
+-precondition is n is not < 0 (tested in makeMerger)
+-if n = 0, it returns true
+-returns false if a[index] > a[index + 1]
+-else it continues advancing index, stops before reaching last position
+-tested with array of all equal elements, several false cases, several true cases like size 0, duplicates at beginning and end
+
+***void fillArray(const string a1[], int n1, const string a2[], int n2, string result[]);
+-fills the result array with the elements of a1 and a2, assumes result size can hold elements from a1 and a2 (tested for in makeMerger function)
+-if a1 or a2 has 0 elements, it adds 0 elements to results
+
+***void arrange(string result[], int n);
+-arranges the elements in result array in nondecreasing order 
+-swaps values if current position value is not the min value
+-this function call positionMin to find the next min given a updated starting point to search from
+
+***int positionMin(const string a[], int n, int start);
+-finds the next minimum string, sets min to starting position, loops thru results, if min > position after, it sets that position as the new min
+-returns position of minimum in result from the start index to end of array (combosize) 
+
+
+
+
+
+
+
+***int separate(string a[], int n, string separator);
+-precondition n is less than or equal to 0, return -1
+-tested if separator is greater than all elements in array "x", return size of array
+-tested seperator being less than all elements in array "a", return position 0
+-tested varying sizes to make sure end limit works
+-tested seperator as "b", "s", "thor" to see arrange worked. on "thor" returned last position "thor"...should return first position greater than or equal to thor
+ 
+    string separator = "x";
+    string a7[6] = {"rhodes", "banner", "stark", "parker", "thor", "rogers"};
+    int seperate_pos = separate(a7, 6, separator);
+    cout << "return value: " << seperate_pos << endl;
+    for(int i = 0; i < 6; i++)
+        cout << a7[i] << " , ";
+    cout << endl;
+    //looped thru entire size (not declared interesting element size) to see how moveToEnd function was working
+
+
+ADDITIONAL FUNCTIONS FOR separate-testing done in separate function
+***int findEdge(const string a[], int n, string target);
+//finds first element >= to separator
+//exit loop, returns size because no element in array is >= to target, they must all be less than target..
+
+
+
+
+

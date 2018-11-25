@@ -1,0 +1,77 @@
+Programming Assignment 2
+Call of Duty
+Time due: 11:00 PM Saturday, April 21
+Before you ask a question about this specification, see if it has already been addressed by the Project 2 FAQ. And read the FAQ before you turn in this project, to be sure you didn't misinterpret anything.
+(Be sure you also do the homework accompanying this project.)
+The mercurial president of the nation of Elbonia surprised the country (and his own staff) by suddenly announcing that in order to protect certain Elbonian domestic industries from cheaper foreign competition, duties will be imposed on various products imported from abroad, with extra protection being given to Elbonia's most important products, pigs and mud. Despite economists' misgivings about the effectiveness of tariffs, duty schedules were decided upon. The job of writing the program that determines the amount of import duty imposed on a particular quantity of a particular product has, oddy enough, been outsourced to the United States, and has come to you. You'd better do a good job, or the president will launch a tweetstorm against you.
+Your program must accept as input the name of the importer, the value of the product being imported in trillions of grubnicks (the Elbonian currency), and the type of product (e.g, steel, pigs, computers, mud, etc.). The output will tell how many trillion grubnicks the importer will have to pay in import duties.
+Here is an example of a dialog with the program (user input is shown in boldface):
+	Importer: Elbonian Construction
+	Product value (in trillions): 800
+	Product: mud
+	---
+	The import duty for Elbonian Construction is G242.00 trillion.
+("G" is the currency symbol for the grubnick.)
+According to the import duty schedule:
+•	For the first 500 trillion grubnicks in value, the duty will be 31% of that value.
+•	In addition, for the next 400 trillion grubnicks in value (beyond the initial 500 trillion), the duty will be increased by an additional amount of 25% of that additional value. However, if the product is pigs or mud (so spelled, entirely in lower case), the amount of this additional duty is 29% of that additional value instead of 25%.
+•	In addition, further duty will be imposed in the amount of 22% of sales above 900 trillion grubnicks.
+As an example, Elbonian Construction above would be assessed 155 trillion for the first 500 trillion in sales, plus 87 trillion for the next 300 trillion in sales (87 instead of 75, since the product is mud), for a total of 242 trillion.
+Here's another example:
+	Importer: Elboni-Cans
+	Product value (in trillions): 216
+	Product: aluminum
+	---
+	The import duty for Elboni-Cans is G66.96 trillion.
+You can test your understanding of the duty schedule plan by experimenting with this import duty calculator we found at the Elbonian government web site.
+Your program must collect the information for one importer in the manner indicated by the examples, and then write to cout a line with three hyphens only (no spaces or other characters), followed by exactly one line in a format required below. Our grading tool will judge the correctness of your program by examining only the line following the line with three hyphens (and verifying that there are no additional lines). That one line you write must be in one of the following five forms; the text must be identical to what is shown, except that italicizeditems are replaced as appropriate:
+•	If an empty string was provided for the importer:
+   You must enter an importer.
+•	If the product value is negative:
+   The product value must not be negative.
+•	If an empty string was provided for the product:
+   You must enter a product.
+•	If the input is valid and none of the preceding situations holds:
+   The import duty for importer is Gamount trillion.
+In the last case, importer must be the importer the user entered, and amount must be the correct answer, shown as a nonnegative number with at least one digit to the left and exactly two digits to the right of the decimal point. (See pp. 32-33 of the Savitch book.) The lines you write must not start with any spaces. If you are not a good speller or typist, or if English is not your first language, be especially careful about duplicating the messages exactly. Here are some foolish mistakes that may cause you to get no points for correctness on this project, no matter how much time you put into it:
+•	Not writing to cout a line with exactly three hyphens in all cases.
+•	Writing any spaces on the line that is supposed to have three hyphens.
+•	Writing more than one line after the line with three hyphens. Don't, for example, add a gratuitous "Protect Elbonian workers!".
+•	Writing lines to cerr instead of cout.
+•	Writing lines like these:
+•		The inport duty for Elbonian Motors is G123.40 trillion.       misspelling
+•		The import Duty for Elbonian Motors is G123.40 trillion.       wrong capitalization
+•		The import duty for Elbonian Motors will be G123.40 trillion.  wrong text
+•		The import duty for Elbonian Motors is G123.40.                missing text
+•		The import duty for Elbonian Motors is G 123.40 trillion.      extra space
+•		The import duty for Elbonian Motors is 123.40 trillion.        missing currency symbol
+•		The import duty for Elbonian Motors is G123.40 trillion        missing period
+•		The import duty for Elbonian Motors is G123.400 trillion.      extra digit
+•		The import duty for Elbonian Motors is G123 trillion.          missing decimal point and digits
+Your program must gather the importer, the product value, and the product in in that order. However, if you detect an error in an item, you do not have to request or get the remaining items if you don't want to; just be sure you write to cout the line of three hyphens, the required message and nothing more after that. If instead you choose to gather all input first before checking for errors, and you detect more than one error, then after writing the line of three hyphens, write only the error message for the earliest erroneous item.
+You will not write any loops in this program. This means that each time you run the program, it handles only one importer. It also means that in the case of bad input, you must not keep prompting the user until you get something acceptable; our grading tool will not recognize that you're doing that.
+A string with no characters in it is the empty string. A string with at least one character in it is not the empty string, even if the only characters in it are things like spaces or tabs. Although realistically it would be silly to have an importer consisting of seventeen spaces and nothing more, treat that as you would any other non-empty string: as a valid importer. (Since you don't yet know how to check for that kind of situation anyway, we're not requiring you to.)
+The one kind of input error that your program does not have to deal with, because you don't yet know how to do so, is not finding a number in the input where the product value is expected. We promise that our grading tool will not, for example, supply the text a whole lot when your program requests the product value. Notice that the product value need not be an integer (so double?) .
+The correctness of your program must not depend on undefined program behavior. Your program could not, for example, assume anything about n's value at the point indicated:
+	int main()
+	{
+	    int n;
+	    int m = 42 * n;  // n's value is undefined
+	    …
+What you will turn in for this assignment is a zip file containing these three files and nothing more:
+1.	A text file named duty.cpp that contains the source code for your C++ program. Your source code should have helpful comments that tell the purpose of the major program segments and explain any tricky code.
+2.	A file named report.docx or report.doc (in Microsoft Word format) or report.txt (an ordinary text file) that contains:
+a.	A brief description of notable obstacles you overcame. (In Project 1, for example, some people had the problem of figuring out how to work with more than one version of a program in Visual C++.)
+b.	A list of the test data that could be used to thoroughly test your program, along with the reason for each test. You don't have to include the results of the tests, but you must note which test cases your program does not handle correctly. (This could happen if you didn't have time to write a complete solution, or if you ran out of time while still debugging a supposedly complete solution.) For Project 1, for example, such a list, had it been required, might have started off like this:
+More surveyed than the total expressing approval and disapproval (1000, 413, 382 )
+Fewer surveyed than the total expressing approval and disapproval (500, 413, 382 )
+Zero people surveyed (0, 100, 100)
+Data giving a non-integer percentage (1000, 413, 382)
+More expressing approval than disapproval (1000, 413, 382)
+Equal numbers expressing approval and disapproval (1000, 500, 500)
+…
+3.	A file named hw.docx or hw.doc (in Microsoft Word format) or hw.txt (an ordinary text file) that contains your solution to the homework accompanying Project 2.
+By April 20, there will be links on the class webpage that will enable you to turn in your zip file electronically. Turn in the file by the due time above. Give yourself enough time to be sure you can turn something in, because we will not accept excuses like "My network connection at home was down, and I didn't have a way to copy my files and bring them to a SEASnet machine." There's a lot to be said for turning in a preliminary version of your program, report, and homework early (You can always overwrite it with a later submission). That way you have something submitted in case there's a problem later. Notice that most of the test data portion of your report can be written from the requirements in this specification, before you even start designing your program.
+The writeup Some Things about Strings tells you what you need to know about strings for this project.
+As you develop your program, periodically try it out under another compiler (g31 on cs31.seas.ucla.edu if you're doing your primary development using Visual C++ or Xcode). Sometimes one compiler will warn you about something that another is silent about, so you may be able to find and fix more errors sooner. If running your program under both environments with the same input gives you different results, your program is probably relying on undefined behavior (such as using the value of an uninitialized variable), which we prohibit.
+

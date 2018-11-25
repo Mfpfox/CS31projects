@@ -1,0 +1,149 @@
+[classmpa@lnxsrv06 ~]$ cd Desktop/
+[classmpa@lnxsrv06 ~/Desktop]$ ls
+hello  helloworld.cpp  main.cpp
+[classmpa@lnxsrv06 ~/Desktop]$ cd ..
+[classmpa@lnxsrv06 ~]$ ls
+Desktop    Downloads  helloworld.cpp  nsdefault
+Documents  hello      main.cpp        perl5
+[classmpa@lnxsrv06 ~]$ g31 -o original main.cpp
+[classmpa@lnxsrv06 ~]$ ./ original
+-bash: ./: Is a directory
+[classmpa@lnxsrv06 ~]$ ./original
+How many people were surveyed? 100
+How many of them approve of the U.S. getting into a trade war with China? 20
+How many of them disapprove of the U.S. getting into a trade war with China? 80
+
+20.0% say they approve.
+80.0% say they disapprove.
+More people disapprove than approve.
+[classmpa@lnxsrv06 ~]$ exit
+logout
+
+
+Goodbye.
+Connection to cs31.seas.ucla.edu closed.
+Marias-MacBook-Pro:~ mariapalafox$ scp Desktop/logic_error.cpp classmpa@cs31.seas.ucla.edu:Desktop
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@       WARNING: POSSIBLE DNS SPOOFING DETECTED!          @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+The ECDSA host key for cs31.seas.ucla.edu has changed,
+and the key for the corresponding IP address 164.67.100.209
+is unknown. This could either mean that
+DNS SPOOFING is happening or the IP address for the host
+and its host key have changed at the same time.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that a host key has just been changed.
+The fingerprint for the ECDSA key sent by the remote host is
+SHA256:kk4Uglj/TTk9Be7q7acNGSjdV1Sk+bsymPopyskF9H4.
+Please contact your system administrator.
+Add correct host key in /Users/mariapalafox/.ssh/known_hosts to get rid of this message.
+Offending ECDSA key in /Users/mariapalafox/.ssh/known_hosts:4
+ECDSA host key for cs31.seas.ucla.edu has changed and you have requested strict checking.
+Host key verification failed.
+lost connection
+Marias-MacBook-Pro:~ mariapalafox$ ssh classmpa@cs31.seas.ucla.edu date
+classmpa@cs31.seas.ucla.edu's password: 
+Mon Apr  9 13:30:21 PDT 2018
+Marias-MacBook-Pro:~ mariapalafox$ scp Desktop/logic_error.cpp classmpa@cs31.seas.ucla.edu:Desktop
+classmpa@cs31.seas.ucla.edu's password: 
+logic_error.cpp                               100% 1056   266.9KB/s   00:00    
+Marias-MacBook-Pro:~ mariapalafox$ scp Desktop/compile__error.cpp classmpa@cs31.seas.ucla.edu:Desktop
+classmpa@cs31.seas.ucla.edu's password: 
+Desktop/compile__error.cpp: No such file or directory
+Marias-MacBook-Pro:~ mariapalafox$ scp Desktop/compile__error.cpp classmpa@cs31.seas.ucla.edu:Desktop
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@       WARNING: POSSIBLE DNS SPOOFING DETECTED!          @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+The ECDSA host key for cs31.seas.ucla.edu has changed,
+and the key for the corresponding IP address 164.67.100.209
+is unknown. This could either mean that
+DNS SPOOFING is happening or the IP address for the host
+and its host key have changed at the same time.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that a host key has just been changed.
+The fingerprint for the ECDSA key sent by the remote host is
+SHA256:kk4Uglj/TTk9Be7q7acNGSjdV1Sk+bsymPopyskF9H4.
+Please contact your system administrator.
+Add correct host key in /Users/mariapalafox/.ssh/known_hosts to get rid of this message.
+Offending ECDSA key in /Users/mariapalafox/.ssh/known_hosts:4
+ECDSA host key for cs31.seas.ucla.edu has changed and you have requested strict checking.
+Host key verification failed.
+lost connection
+Marias-MacBook-Pro:~ mariapalafox$ ssh classmpa@cs31.seas.ucla.edu date
+classmpa@cs31.seas.ucla.edu's password: 
+Mon Apr  9 13:32:12 PDT 2018
+Marias-MacBook-Pro:~ mariapalafox$ scp Desktop/compile__error.cpp classmpa@cs31.seas.ucla.edu:Desktop
+classmpa@cs31.seas.ucla.edu's password: 
+Desktop/compile__error.cpp: No such file or directory
+Marias-MacBook-Pro:~ mariapalafox$ scp Desktop/compile_error.cpp classmpa@cs31.seas.ucla.edu:Desktop
+classmpa@cs31.seas.ucla.edu's password: 
+compile_error.cpp                             100% 1060   285.4KB/s   00:00    
+Marias-MacBook-Pro:~ mariapalafox$ ssh classmpa@cs31.seas.ucla.edu 
+classmpa@cs31.seas.ucla.edu's password: 
+Last login: Mon Apr  9 12:56:23 2018 from wifi-natpool-131-179-59-83.host.ucla.edu
+*****************************************************************************
+                        lnxsrv06.seas.ucla.edu RHEL 7
+*****************************************************************************
+
+	lnxsrv06 now running RHEL 7 as of 20160428
+        RedHat 7 -- may not behave the same as other lnxsrv
+        Will be used by CS 35L, CS 33, CS 111, and CS 131
+	* User processes older than 36 hours will be cleaned up
+
+*****************************************************************************
+*****************************************************************************
+* ========================================================================= *
+* SEASnet Computing Access                                                  *
+*                                                                           *
+* Priority is given both on the servers and in the student labs to those    *
+* students doing coursework. Computing support for research is provided by  *
+* each department.                                                          *
+*****************************************************************************
+* For assistance please contact help@seas.ucla.edu or call 206-6864.        *
+*****************************************************************************
+[classmpa@lnxsrv06 ~]$ ls Desktop
+compile_error.cpp  hello  helloworld.cpp  logic_error.cpp  main.cpp
+[classmpa@lnxsrv06 ~]$ ls
+Desktop    Downloads  helloworld.cpp  nsdefault  perl5
+Documents  hello      main.cpp        original
+[classmpa@lnxsrv06 ~]$ cp Desktop/logic_error.cpp .
+[classmpa@lnxsrv06 ~]$ cp Desktop/compile_error.cpp .
+[classmpa@lnxsrv06 ~]$ g31 -o compile compile_error.cpp 
+compile_error.cpp:8:1: error: expected unqualified-id before '{' token
+ {
+ ^
+[classmpa@lnxsrv06 ~]$ g31 -o compile logic_error.cpp 
+[classmpa@lnxsrv06 ~]$ ./compile
+How many people were surveyed? 100
+How many of them approve of the U.S. getting into a trade war with China? 20
+How many of them disapprove of the U.S. getting into a trade war with China? 80
+
+120.0% say they approve.
+100.0% say they disapprove.
+More people disapprove than approve.
+[classmpa@lnxsrv06 ~]$ ls
+compile            Desktop    Downloads  helloworld.cpp   main.cpp   original
+compile_error.cpp  Documents  hello      logic_error.cpp  nsdefault  perl5
+[classmpa@lnxsrv06 ~]$ ls
+compile            Desktop    Downloads  helloworld.cpp   main.cpp   original
+compile_error.cpp  Documents  hello      logic_error.cpp  nsdefault  perl5
+[classmpa@lnxsrv06 ~]$ g31 -o compile compile_error.cpp 
+compile_error.cpp:8:1: error: expected unqualified-id before '{' token
+ {
+ ^
+[classmpa@lnxsrv06 ~]$ vim compile_error.cpp 
+[classmpa@lnxsrv06 ~]$ g31 -o compile compile_error.cpp 
+compile_error.cpp: In function 'int main()':
+compile_error.cpp:33:63: error: expected '}' at end of input
+         cout << "More people disapprove than approve." << endl;
+                                                               ^
+[classmpa@lnxsrv06 ~]$ vim compile_error.cpp 
+[classmpa@lnxsrv06 ~]$ 

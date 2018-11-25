@@ -1,0 +1,145 @@
+Homework 2 due April 21
+
+1.	Output produced from question 1:
+
+endlendl
+grendel 
+
+//at the end of cout, no new line was established so just adds on to current line.  Once endl; was entered cursor moves to new line..type variable = assigned a string (initialized in declaration)
+
+2. This program asks you to "Enter a number:" and assigned the number to the identifier len.  the program only produced output if the number > 0.  if you enter in 5, the program produces a forward slash shaped line of # signs spanning a number of lines = to len.  if you enter in a double it spans a number of lines = to the interger value len.  
+
+
+FROM SOLUTIONS:
+It prints a diagonal line of the specified length. 
+
+
+//original program	
+#include <iostream>
+#include <string>
+using namespace std;
+ int main()
+	{
+	    int len;
+
+	    cout << "Enter a number: ";
+	    cin >> len;
+
+	for (int i = 0; i < len; i++)
+	{
+		  for (int j = i+1; j < len; j++)
+	    {
+		    cout << " ";
+	    }
+		  cout << "#" << endl;
+	}
+	}
+
+
+
+
+3. //inner loop is while loop
+
+#include <iostream>
+#include <string>
+using namespace std;
+int main()
+	{
+	    int len;
+
+	    cout << "Enter a number: ";
+	    cin >> len;
+	    
+	    for (int i = 0; i < len; i++)
+	    {
+	      int j = 1+i;
+	      while (j < len)
+		{
+		    cout << " ";
+		    j++;
+		}
+		  cout << "#" << endl;
+	    }
+	}
+
+
+
+
+	
+4.// do while loop for outer loop
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+
+int main()
+{
+	int len;
+
+	cout << "Enter a number: ";
+	cin >> len;
+
+ int i = 0;
+do {
+ 	 for (int j = i+1; j < len; j++)
+	{
+		    cout << " ";
+	}
+	cout << "#" << endl;
+	i++;
+	} while (i<len);
+	return 0;
+	
+	}
+
+
+//correct way from SOLUTIONS
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int len;
+
+    cout << "Enter a number: ";
+    cin >> len;
+
+    if (len > 0)  // No output whatsoever if len is nonpositive
+    {
+        int i = 0;
+        do
+        {
+            int j = i+1;
+            while (j < len)
+            {
+                cout << " ";
+                j++;
+            }
+            cout << "#" << endl;
+            i++;
+        } while (i < len);
+    }
+}   
+	
+
+5. 
+switch (codeSection)  //controlling expression
+{
+	case 281:
+		cout << "bigamy";
+		break;
+	case 321:
+	case 322:
+		cout << "selling illegal lottery tickets";
+		break;
+	case 383:
+		cout << "selling rancid butter";
+		break;
+	case 599:
+		cout << "artificially coloring a live rabbit";
+		break;
+	default:
+		cout << "some other crime";
+}
+

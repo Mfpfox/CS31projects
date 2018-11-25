@@ -1,0 +1,387 @@
+
+###notable obstacles################################################################################
+1. processing the paragraph breaks, especially the consecutive case that appeared as first words in infile. 
+
+2. Debugging!! I did not fully check my stuff normal word function thoroughly and realized there was a problem after implementing the paragraph break code and hyphen word code
+
+3. processing word portions of hyphen words: specifically making two indexes, one to tract position of full word and one tracking the position in the array that is being filled with the word portion. 
+
+4. figuring out how to account for correct spacing...I tried to read the file twice (once to count of total words and use that as way to see if im on last word in processing) and the other time reading to process each word as I go.  Hours later only to realize you cannot read a file twice with get function (unless you clear() and close and reopen file which I could not do)
+
+5. if i had more time, I would have merged the functions stuffWordPortion and stuffNormalWord, they have alot of overlap...the main difference being, stuffWordPortion considers flag first word portion added to determine is facing should be considered. 
+
+
+###pseudocode#############################################################################################
+int stuff(int lineLength, istream& inf, ostream& outf);
+
+IN STUFF FUNCTION
+repeatedly:
+
+	call findToken function;
+		IN FINDTOKEN
+		some code below....
+	function sets hyphenFound flag if needed, increments word counter, and adds word to c string
+	returns false if no word found and true if word collected in array
+
+	check if output of bool findToken is true or false;
+		false breaks //done collecting words
+	
+
+	check if token collected is a paragraph break
+		if its equal to #P#
+			if its the first word of inputfile
+				set flag firstWordPara to true
+
+			in do while loop - preventing processing consecutive paragraph breaks
+				collect next token until the word you collect does not equal #P#
+				break out if either collected a nonparagraph break word or at end of file
+			
+			check if findToken was successful
+				if false break
+			
+			process paragraph break if the first word flag is false
+				add empty line, reset remaining on line length
+
+			reset the flag for first word to false
+		end of paragraph break processing
+			
+
+	find the length of token/word just collected
+
+
+	call stuffNormalWord
+		IN STUFFNORMALWORD
+		some code below.....
+	function adds word to outfile and calls other functions if the word does not fit on line
+	sets perfectFit flag if needed, returns adjusted remainingOnLine size
+
+
+	check if the word just written to outfile has a '.' or '?' at the end
+		if so set twoSpaces flag to true (to account for two spaces following these chars)
+		else keep twoSpaces set to false
+
+
+end of loop
+	exited because done processing input file words
+	
+check word count
+	if count does not equal zero, process newline character following last word of outfile
+
+check if all words fit on line perfectly
+	if yes return 0
+	else return 1
+
+passes outfile with formatted input file words
+	
+###Functions called#########################################################################
+bool findToken(char a[], istream& inf, int& currentWordCount, bool& hyphenFound)
+	
+IN FINDTOKEN
+	repeatedly:
+		ignore white spaces
+		if array index greater than 0 and white space encountered
+			add zero byte to array, mark end of word
+			increment word counter
+			return true
+		interesting (non white space) character found
+			add to array
+			increment index
+			if a '-' is added to new array, set flag for hyphenFound
+
+	break if at end of file or word is at max size
+
+	check if array was partially filled when loop was broken
+		if so, 
+			add zero byte to array to mark end of word
+			increment word counter
+			return true
+	
+return false if no word collected //passes updated array containing word, set hypehFound flag to true if - char put in array, updates current word count
+		
+###################################################################################
+void stuffNormalWord(const char a[], const int lineLength, int& remainingOnLine, ostream& outf, bool& perfectFit, const int tokenSize, bool twoSpaces, bool hyphenFound)
+
+IN STUFFNORMALWORD
+	repeatedly:
+
+		if at begining of new line (remainingOnLine == lineLength)
+			if token will fit
+				write to outfile, adjust remainingOnLine, return
+			if token will not fit
+				if its a hyphen word
+					call hyphenWord function
+						IN HYPHENWORD
+						some code ...............
+					return
+				else (not a hyphen word)
+					set perfectFit flag to false
+					call imperfectFitNormalWord function
+						IN IMPERFECT FIT
+						some code................
+					return
+
+		if there are already some words on line
+			if twoSpaces flag is true (last word added ended with . or ?)
+				if the token will fit, including two spaces 
+					write two spaces
+					write token to outfile
+					adjust remaining
+					return
+				if the token will not fit
+					if its a hyphen word
+						call hyphenWord function
+							IN HYPHENWORD
+							some code ...............
+						return
+					else (not hyphen word)
+						go to next line
+						adjust remaining
+						continue to top of loop
+			if twoSpaces flag is false
+				if the token will fit, including one spaces 
+					write space
+					write token to outfile
+					adjust remaining
+					return
+				if the token will not fit
+					if its a hyphen word
+						call hyphenWord function
+							IN HYPHENWORD
+							some code ...............
+						return
+					else (not hyphen word)
+						go to next line
+						adjust remaining
+						continue to top of loop
+	end of loop
+
+return// passes updated remainingOnLine, writes to outfile, updated perfect fit flag if imperfect fit function called
+###################################################################################
+void imperfectFitNormalWord(const char a[], const int lineLength, int& remainingOnLine, ostream& outf)
+
+IN IMPERFECT FIT
+	repeatedly:
+		if there is space for at least on char on current line
+			write character to outfile
+			increase index (for array holding the word)
+			decrement remainingOnLine
+			continue
+		if there is no more space on current line
+			go to newline
+			set remainingOnLine to max lineLength
+			write character
+			increment index
+			decrement remainingOnLine
+
+	break out of loop because done adding each character from token array to outfile
+
+return// passes updated remainingOnLine and outfile
+###################################################################################
+void hyphenWord(const char a[], const int lineLength, int& remainingOnLine, ostream& outf, bool& perfectFit, const int tokenSize, bool twoSpaces)
+
+IN HYPHENWORD
+	create new array to hold word portions
+	set the first position to zero byte //way to tell if the array is holding another word portion
+	set flag for first word portion added to false //to determine if spaces need to be added or not
+	set index for token array to zero
+	repeatedly:
+		get word portion from token until token array index at zero byte
+			add char from token array to word portion array
+			if the char just added was a hyphen or token array index at max index position
+				increase token array position
+				increase word portion array index
+				add zero byte to word portion array to mark end
+				break
+			else
+				increment token array index
+				continue to collect word portion
+	breaks because a wordportion was collected or because at the end of token array
+
+	check if there is a word portion in array by assessing position 0 for zero byte
+		nothing in word portion array, return.
+
+	get size of word portion in array
+		sets int to wordPortionSize
+
+	call stuffWordPortion function
+		IN STUFF WORD PORTION
+			some code.......
+
+return //done adding word portions to outfile, updates remainingOnLine, writes to outfile, perfectFit flag set to false if imperfect fit function called
+
+###################################################################################
+void stuffWordPortion(char wp[], const int lineLength, int& remainingOnLine, ostream& outf, bool& perfectFit, const int wordPortionSize, bool twoSpaces, bool& firstPortionAdded)
+
+IN STUFF WORD PORTION
+	repeatedly:
+		if first word portion not added //need to consider spacing
+			check if on a newline
+				if word portion will fit
+					write to outfile
+					adjust remainingOnLine
+					reset wp array position 0 to zero byte 
+					set flag for first portion added to true
+					return
+				if word portinon will not fit	
+					set perfectFit flag to false
+					call imperfectFitNormalWord function
+						IN IMPERFECT FIT 
+						some code......
+					reset wp array position 0 to zero byte 
+					set flag for first portion added to true
+					return
+			check if current line already has characters
+				if two spaces flag is true
+					if wp will fit, including spaces
+						write spaces and wp to outfile
+						adjust remainingOnLine
+						reset array position 0 to zero byte
+						set flag for first portion added to true
+						return
+					if wp wont fit
+						go to next newline of outfile
+						set remainingOnLine to max lineLength
+						continue to top of loop to check fit
+				if two spaces flag is false
+					if wp will fit, including space
+						write space and wp to outfile
+						adjust remainingOnLine
+						reset array position 0 to zero byte
+						set flag for first portion added to true
+						return
+					if wp wont fit
+						go to next newline of outfile
+						set remainingOnLine to max lineLength
+						continue to top of loop to check fit 
+
+
+		if first word portion already added to outfile //dont added spaces btw portions
+			check if on a newline
+				if word portion will fit
+					write to outfile
+					adjust remainingOnLine
+					reset wp array position 0 to zero byte 
+					return
+				if word portinon will not fit	
+					set perfectFit flag to false
+					call imperfectFitNormalWord function
+						IN IMPERFECT FIT 
+						some code......
+					reset wp array position 0 to zero byte 
+					return
+			check if current line already has characters
+				if wp will fit
+					write wp to outfile
+					adjust remainingOnLine
+					reset array position 0 to zero byte
+					return
+				if wp wont fit
+					go to next newline of outfile
+					set remainingOnLine to max lineLength
+					continue to top of loop to check fit
+	breaks loop after word portion written to outfile
+
+
+return  // back to hyphen word function, passes updated remainingOnLine, updated outfile, perfectFit flag (changed if needed), and first portion added flag set to true (after the first portion was added)
+				
+###end of pseudocode######################################################################
+
+
+
+###test data############################################################################## 
+TEST 0: made sure that i could open inf and outf successfully
+//function passed TEST 0
+
+
+TEST 1: can function find words and add words to outfile with one space between all words collected. 
+//tested if returns 0 if nothing in input file
+//used this data to test if find Token function spotted collecting word when white space encountered.
+//function passed TEST 1
+
+
+
+Two 			roads diverged
+	in a yellow wood &*(&*(&*( kdl ----- 		123432 7bjfdksl;a
+****** <>fjdkls;a 
+And sorry I could not travel both ...... ??? ? ?
+
+
+
+
+TEST 2: added parameter line Length and tested above input file
+//tested if it returns 2 for linelength less than 1
+//added chars up to line length limit (varied between length 1 and 301)
+//ignored special cases (hyphen words, paragraph break, . or ?)
+//tested perfect fit flag, return 1
+//function passed TEST 2
+
+
+TEST 3: processing paragraph breaks
+//tested whether function ignores breaks if they are at beginning of file
+//tested if function ignores breaks if at end of file
+//tested if processed break correctly
+//tested if processed break only once if in a consecutive sequence
+//tested if #P#fjdksl was not counted as a break point
+//function passed TEST 3
+
+
+ #P# #P# #P# #P# fjdkl;asjfdkl;sa jfdkj 58493 			
+	
+	-- #P# - - - - #P#
+
+  in a wood and I— I took the one less traveled b
+i-am--testing-whether my-function
+And both 
+#P# #P# #P# #P#that morning equally lay
+In leaves no step 		had trodden black.
+Oh I kept the first 
+for 
+#P# #P# #P# 
+					#P#another day.
+Yet knowing how way 
+#P##P##P##P#leads on to way
+I doubted if I should ever come back.
+
+#P# #P# #P# #P#
+
+
+
+TEST 4: processing . and ? cases, two spaces after this punctuation
+//set lineLength to 5
+//function passed TEST 4
+
+
+Some say the world will end in fire	
+Some? say in ice.	
+From? what I’ve tasted of desire?	
+I hold with those who favor fire.	
+But if it had to perish twice
+I think I know enough of hate	
+To know that for.  destruction ice	
+Is also great	
+And would suffice?
+
+
+TEST 5: processing hyphen words into word portions
+//tested hyphen found flag
+//tested perfect fit flag
+//tested if hyphen broken correctly on line (end of line has end of word portion or wp starts next new line)
+//function passed TEST 5
+
+
+i-am--testi	ng-whether my-function1 ------ - - - djk
+ls;- jfdksl;-fjk			dls;a
+-#%*()____---
+
+and 				i—
+an			di—
+and i—
+
+how-to-handle-- - hyp-en-s lets-hope! -- #P# - - - - #P#
+hyp-en-s
+  in a wood and I— I took the one less traveled 
+
+TEST 6: made sure that the last char following last word of outfile was newline by writing to outfile << "this should be on newline"
+//function passed TEST 6
+
+####################################################################################### 

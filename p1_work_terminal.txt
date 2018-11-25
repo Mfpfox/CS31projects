@@ -1,0 +1,160 @@
+	lnxsrv06 now running RHEL 7 as of 20160428
+        RedHat 7 -- may not behave the same as other lnxsrv
+        Will be used by CS 35L, CS 33, CS 111, and CS 131
+	* User processes older than 36 hours will be cleaned up
+
+*****************************************************************************
+*****************************************************************************
+* ========================================================================= *
+* SEASnet Computing Access                                                  *
+*                                                                           *
+* Priority is given both on the servers and in the student labs to those    *
+* students doing coursework. Computing support for research is provided by  *
+* each department.                                                          *
+*****************************************************************************
+* For assistance please contact help@seas.ucla.edu or call 206-6864.        *
+*****************************************************************************
+Attempting to create directory /u/eng/class/classmpa/perl5
+[classmpa@lnxsrv06 ~]$ 
+[classmpa@lnxsrv06 ~]$ 
+[classmpa@lnxsrv06 ~]$ ls Desktop
+helloworld.cpp
+[classmpa@lnxsrv06 ~]$ curl -s -L http://cs.ucla.edu/classes/spring18/cs31/Utilities/setupg31 | bash
+Log out and log back in again to complete the setup.
+[classmpa@lnxsrv06 ~]$ exit
+logout
+
+
+Goodbye.
+Connection to cs31.seas.ucla.edu closed.
+vpn-128-97-245-196:~ mariapalafox$ ssh classmpa@cs31.seas.ucla.edu
+classmpa@cs31.seas.ucla.edu's password: 
+Last login: Sun Apr  8 22:41:43 2018 from vpn-128-97-245-196.host.ucla.edu
+*****************************************************************************
+                        lnxsrv06.seas.ucla.edu RHEL 7
+*****************************************************************************
+
+	lnxsrv06 now running RHEL 7 as of 20160428
+        RedHat 7 -- may not behave the same as other lnxsrv
+        Will be used by CS 35L, CS 33, CS 111, and CS 131
+	* User processes older than 36 hours will be cleaned up
+
+*****************************************************************************
+*****************************************************************************
+* ========================================================================= *
+* SEASnet Computing Access                                                  *
+*                                                                           *
+* Priority is given both on the servers and in the student labs to those    *
+* students doing coursework. Computing support for research is provided by  *
+* each department.                                                          *
+*****************************************************************************
+* For assistance please contact help@seas.ucla.edu or call 206-6864.        *
+*****************************************************************************
+[classmpa@lnxsrv06 ~]$ ls
+Desktop  Documents  Downloads  nsdefault  perl5
+[classmpa@lnxsrv06 ~]$ ls Desktop
+helloworld.cpp
+[classmpa@lnxsrv06 ~]$ cp Desktop/hello.cpp .
+cp: cannot stat ‘Desktop/hello.cpp’: No such file or directory
+[classmpa@lnxsrv06 ~]$ cp Desktop/helloworldo.cpp .
+cp: cannot stat ‘Desktop/helloworldo.cpp’: No such file or directory
+[classmpa@lnxsrv06 ~]$ cp Desktop/helloworld.cpp .
+[classmpa@lnxsrv06 ~]$ 
+[classmpa@lnxsrv06 ~]$ 
+[classmpa@lnxsrv06 ~]$ // copied helloworld into the current directory which is the shell of the linux server
+-bash: //: Is a directory
+[classmpa@lnxsrv06 ~]$ 
+[classmpa@lnxsrv06 ~]$ 
+[classmpa@lnxsrv06 ~]$ ls
+Desktop  Documents  Downloads  helloworld.cpp  nsdefault  perl5
+[classmpa@lnxsrv06 ~]$ 
+[classmpa@lnxsrv06 ~]$ 
+[classmpa@lnxsrv06 ~]$ g31 -o hello helloworld.cpp
+helloworld.cpp: In function 'int main(int, const char**)':
+helloworld.cpp:11:14: warning: unused parameter 'argc' [-Wunused-parameter]
+ int main(int argc, const char * argv[]) {
+              ^~~~
+helloworld.cpp:11:38: warning: unused parameter 'argv' [-Wunused-parameter]
+ int main(int argc, const char * argv[]) {
+                                      ^
+[classmpa@lnxsrv06 ~]$ ///edit the file in X code and save it as helloworld1, then copy updated version again to shell to create an executable file
+-bash: ///edit: No such file or directory
+[classmpa@lnxsrv06 ~]$ 
+[classmpa@lnxsrv06 ~]$ 
+[classmpa@lnxsrv06 ~]$ packet_write_wait: Connection to 164.67.100.236 port 22: Broken pipe
+vpn-128-97-245-196:~ mariapalafox$ ls
+5ifm.cif			Desktop				Movies				book chapter library .Data
+Applications			Documents			Music
+Backus				Downloads			Pictures
+Creative Cloud Files		Library				Public
+vpn-128-97-245-196:~ mariapalafox$ cd Desktop/
+vpn-128-97-245-196:Desktop mariapalafox$ ls
+MS txt files		Project 1		book chaper library.xml	helloworld.cpp
+NONO.pse		Training Grant 		helloworld		linalg_notes (1).pdf
+vpn-128-97-245-196:Desktop mariapalafox$ vim helloworld.cpp 
+vpn-128-97-245-196:Desktop mariapalafox$ vim helloworld.cpp 
+vpn-128-97-245-196:Desktop mariapalafox$ g31 -o hello helloworld.cpp
+-bash: g31: command not found
+vpn-128-97-245-196:Desktop mariapalafox$ ssh classmpa@cs31.seas.ucla.edu
+classmpa@cs31.seas.ucla.edu's password: 
+Last login: Sun Apr  8 22:45:23 2018 from vpn-128-97-245-196.host.ucla.edu
+*****************************************************************************
+                        lnxsrv06.seas.ucla.edu RHEL 7
+*****************************************************************************
+
+	lnxsrv06 now running RHEL 7 as of 20160428
+        RedHat 7 -- may not behave the same as other lnxsrv
+        Will be used by CS 35L, CS 33, CS 111, and CS 131
+	* User processes older than 36 hours will be cleaned up
+
+*****************************************************************************
+*****************************************************************************
+* ========================================================================= *
+* SEASnet Computing Access                                                  *
+*                                                                           *
+* Priority is given both on the servers and in the student labs to those    *
+* students doing coursework. Computing support for research is provided by  *
+* each department.                                                          *
+*****************************************************************************
+* For assistance please contact help@seas.ucla.edu or call 206-6864.        *
+*****************************************************************************
+[classmpa@lnxsrv06 ~]$ ls
+Desktop  Documents  Downloads  hello  helloworld.cpp  nsdefault  perl5
+[classmpa@lnxsrv06 ~]$ cd Desktop/
+[classmpa@lnxsrv06 ~/Desktop]$ ls
+helloworld.cpp
+[classmpa@lnxsrv06 ~/Desktop]$ g31 -o hello helloworld.cpp
+helloworld.cpp: In function 'int main(int, const char**)':
+helloworld.cpp:11:14: warning: unused parameter 'argc' [-Wunused-parameter]
+ int main(int argc, const char * argv[]) {
+              ^~~~
+helloworld.cpp:11:38: warning: unused parameter 'argv' [-Wunused-parameter]
+ int main(int argc, const char * argv[]) {
+                                      ^
+[classmpa@lnxsrv06 ~/Desktop]$ ls
+hello  helloworld.cpp
+[classmpa@lnxsrv06 ~/Desktop]$ ./hello 
+Hello, World!
+[classmpa@lnxsrv06 ~/Desktop]$ scp Desktop/main.cpp classmpa@cs31.seas.ucla.edu date
+date: No such file or directory
+[classmpa@lnxsrv06 ~/Desktop]$ scp Desktop/main.cpp classmpa@cs31.seas.ucla.edu
+cp: cannot stat ‘Desktop/main.cpp’: No such file or directory
+[classmpa@lnxsrv06 ~/Desktop]$ scp Desktop/main.cpp classmpa@cs31.seas.ucla.edu
+cp: cannot stat ‘Desktop/main.cpp’: No such file or directory
+[classmpa@lnxsrv06 ~/Desktop]$ scp Desktop/main.cpp classmpa@cs31.seas.ucla.edu data
+data: No such file or directory
+[classmpa@lnxsrv06 ~/Desktop]$ scp Desktop/main.cpp classmpa@cs31.seas.ucla.edu date
+date: No such file or directory
+[classmpa@lnxsrv06 ~/Desktop]$ scp Desktop/main.cpp classmpa@cs31.seas.ucla.edu date
+date: No such file or directory
+[classmpa@lnxsrv06 ~/Desktop]$ scp Desktop/main.cpp classmpa@cs31.seas.ucla.edu:Desktop
+The authenticity of host 'cs31.seas.ucla.edu (164.67.100.236)' can't be established.
+ECDSA key fingerprint is SHA256:vJtol+LWVSJuAARF7OZ47jWHXx/OLFLHT5lkENeStr8.
+ECDSA key fingerprint is MD5:50:f0:ea:37:56:14:ba:6a:3d:a6:f6:b6:69:e6:6a:cc.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'cs31.seas.ucla.edu,164.67.100.236' (ECDSA) to the list of known hosts.
+classmpa@cs31.seas.ucla.edu's password: 
+Desktop/main.cpp: No such file or directory
+[classmpa@lnxsrv06 ~/Desktop]$ ls
+hello  helloworld.cpp
+[classmpa@lnxsrv06 ~/Desktop]$ 

@@ -1,0 +1,343 @@
+Spring 2018 CS 31
+String Processing
+Here is an example of a technique for processing a string that can be adapted for use in Project 3.
+A service for tourists to a city provides self-guided walking tours that visit points of interest that the tourist selects from a list. If the tourist wants to visit points B, F, and H (the points are coded by capital letters), the service prints a set of instructions (e.g., "Turn right and proceed for 10 blocks. Stop at point of interest F.") The code that takes the requested points and determines an optimal route has already been written, but it produces a route in coded form; our job is to write a function that takes the coded string and prints human-readable instructions.
+A coded string looks something like this: 10R3LSH12L5RSB3RSF. It is a sequence of steps, where each step takes one of three forms, with an associated meaning
+integerR
+Turn right and proceed for integer blocks
+integerL
+Turn left and proceed for integer blocks
+Sletter
+Stop at point of interest letter
+The function that we are to write has the following prototype:
+	bool translateInstructionString(string text);
+For each step in the argument string, the function writes a human-readable instruction. As an example, for the step 10R, the function writes Turn right and proceed for 10 blocks. If it encounters no errors in the string, it returns true when it's done; otherwise, it does not finish processing the string and returns false, possibly after having printed some instructions before the point where it encountered the error. For example, if the function is called with the argument 10R3LSH12L5RSB3RSF, it prints the following and returns true:
+	Turn right and proceed for 10 blocks.
+	Turn left and proceed for 3 blocks.
+	Stop at point of interest H.
+	Turn left and proceed for 12 blocks.
+	Turn right and proceed for 5 blocks.
+	Stop at point of interest B.
+	Turn right and proceed for 3 blocks.
+	Stop at point of interest F.
+Our solution strategy will be to visit the steps of the string from left to right. Pictorially, we'd start like this:
+	10R3LSH12L5RSB3RSF
+	^
+Examining the indicated character, we see it's a digit. We'll call a function to process an R or L step, which looks for a sequence of digits followed by the letter, writes the human-readable "Turn right" or "Turn left" instruction, and advances the position in the string, resulting in
+	10R3LSH12L5RSB3RSF
+	   ^
+We examine the indicated character, call the same function to process the 3L step, and advance the position, resulting in
+	10R3LSH12L5RSB3RSF
+	     ^
+Continuing in this manner, we eventually reach
+	10R3LSH12L5RSB3RSF
+	                ^
+We examine the indicated character, process the SF step, and advance the position, resulting in
+	10R3LSH12L5RSB3RSF
+	                  ^
+Since we've reached the end of the string, we're done; since we didn't encounter any error, we return true.
+The functions to process the various kinds of steps need the coded string and the current position in the string; when they return, they need to let their caller know the position in the string just after the step. Also, they may encounter an error (e.g., digits not followed by R or L), so they need to indicate that as well. One design is this:
+	Stopped here bool processRorLstep(string text, int& pos);
+If this function is called with the example string we've been using and a integer variable k whose value is 7, representing the following situation:
+                  11111111
+        012345678901234567
+
+	10R3LSH12L5RSB3RSF
+	       ^
+the function should write "Turn left and proceed for 12 blocks.", set k to 10, and return true. (Because k is passed by reference, since the parameter was declared to be of type int& instead of int, the function can change k.) Setting k to 10 indicates this:
+                  11111111
+        012345678901234567
+
+	10R3LSH12L5RSB3RSF
+	          ^
+If the function encounters an error (no R or L after the digits), it should return false.
+Here then is our initial version of translateInstructionString:
+	bool translateInstructionString(string text)  // not the final version
+	{
+	    int k = 0;
+	    while (k != text.size())
+	    {
+	          // Decide what to do based on start of instruction
+
+	        if (isdigit(text[k]))
+	        {
+	              // Process R or L step, but if it detects an error,
+	              // we're done
+	            if (!processRorLstep(text, k))
+	                return false;
+	        }
+	        else if (text[k] == 'S')
+		{
+	            if (!processSstep(text, k))
+	                return false;
+		}
+		else
+		{
+	              // Not an R, L, or S step, so error
+	            return false;
+	        }
+	    }
+
+	      // We got through the whole text without error
+
+	    return true;
+	}
+The easiest function to implement next is processSstep:
+	bool processSstep(string text, int& pos)
+	{
+	      // When this function is called we know text[pos] is 'S',
+	      // so advance to the next position
+
+	    pos++;
+
+	      // If there is no character after the S, error
+
+	    if (pos == text.size())
+	        return false;
+
+	      // Points of interest are indicated by upper case letters
+
+	    if (!isupper(text[pos]))
+	        return false;
+
+	      // Everything's OK.  Write message and advance position
+
+	    cout << "Stop at point of interest " << text[pos] << "." << endl;
+	    pos++;
+	    return true;
+	}
+Here is processRorLstep:
+	bool processRorLstep(string text, int& pos)
+	{
+	      // Get distance.  We know text[pos] is a digit
+
+	    string distance = "";
+	    do
+	    {
+	        distance += text[pos];
+	        pos++;
+	    } while (pos != text.size()  &&  isdigit(text[pos]));
+
+	      // We're past the digits, so check direction
+
+	    if (pos == text.size()  ||  (text[pos] != 'R'  &&  text[pos] != 'L'))
+	        return false;
+
+	      // Everything's OK.  Write message
+
+	    cout << "Turn ";
+	    if (text[pos] == 'R')
+	        cout << "right";
+	    else
+	        cout << "left";
+	    cout << " and proceed for " << distance << "blocks." << endl;
+
+	      // Advance position
+
+	    pos++;
+	    return true;
+	}
+Here's one way to test our code:
+	int main()
+	{
+	    for (;;)
+	    {
+	        cout << "Enter coded string (or just hit Enter to quit): ";
+	        string coded;
+	        getline(cin, coded);
+		if (coded == "")
+	            break;
+	        if (!translateInstructionString(coded))
+	            cout << "  *** There is an error in the string! ***" << endl;
+	    }
+	}
+
+
+Characters and Integers
+All data in a computer are stored as numbers. This is true of characters like 'A', '@', ' ', and '4'. Every character has a corresponding integer code. Different computers may have different encoding schemes, so the code number corresponding to the character 'A' may be 65 on some machines and 193 on others. The C++ standard does not dictate which encoding scheme a system must use.
+What the C++ standard does dictate is that the code numbers for the digit characters '0' through '9' must be contiguous and increasing. In other words, for any particular encoding scheme, there is an integer x such that
+•	'0' has code number x
+•	'1' has code number x+1
+•	'2' has code number x+2
+•	…
+•	'9' has code number x+9
+For the ASCII encoding scheme, x happens to be 48, while for the EBCDIC scheme, it's 240. However, we should never need to know the particular value for x. Let's see why.
+C and C++ have the following rules: If a char is used where a number is required, the compiler causes the program to use the code number for that character; if a number is used where a char is required, the program uses the char corresponding to that code number. So consider this:
+char ch = '0';     // Let's say the code number for '0' is x
+ch++;              // now ch is '1' (x+1)
+ch += 7;           // now ch is '8' (since (x+1)+7 is x+8)
+int n = ch;        // n is the code number for '8' (i.e., x+8)
+int m = ch - '3';  //  '8' - '3'
+		   //    which is (x+8) - (x+3)
+		   //    which is 8 - 3
+		   //    so m is 5
+Notice that m will be 5 no matter what encoding scheme our computer uses (so no matter what value x, the code for '0', is). If it's ASCII, for example, ch ends up as 56 and '3' is 51, and 56 minus 51 is 5. If it's EBCDIC, ch is 248 and '3' is 243, and 248 minus 243 is 5. In general, your program should never need to use integer constants like 48 to represent a character code; if you want to represent the code for the character '0', for example, just say '0', not 48.
+On another note, why do we interpret the sequence of characters consisting of the digit four, the digit seven, and the digit three as the number four hundred seventy-three? What if someone revealed the digits to you one at a time?
+"I'm going to show you some digits, and you tell me what number they represent. The first digit is four."
+"OK, I think the number is four."
+"The next digit is seven."
+"Hmmm, I thought the number was four, but there's another digit. Ten times four is forty, plus seven is forty-seven. I think the number is forty-seven."
+"The next digit is three."
+"Hmmm, I thought the number was forty-seven, but there's another digit. Ten times forty-seven is four hundred seventy, plus three is four hundred seventy-three. I think the number is four hundred seventy-three."
+"There are no more digits."
+"The number is four hundred seventy-three."
+
+
+
+
+
+
+
+
+
+
+
+Project 3 FAQ
+1.	How do I begin?
+First, the announcement dated 4/27/18 is loaded with resources to give you the tools you need. Read all the writeups. Even if you don't see why they're relevant at first, as you progress in the project you'll be thinking at various points "Now I need to …. Wait! Didn't I read something related to that?", and can read the appropriate writeup again, this time with greater understanding. Do the Project 3 warmup to make sure you understand the mechanics of using functions.
+Again, as in Project 2, one secret of success is to develop incrementally. Work on the easier function first: hasCorrectSyntax. Make a tremendously simplifying assumption: A song is syntactically correct if it contains no beats at all. Get the function working with that simplification: it should return true for the empty string, and false otherwise.
+This seems ridiculously trivial, but it gets you past an important hurdle. You now know how to declare a function, implement it, and write a main routine that tests it. Further work then becomes merely adjusting the implementation and the test cases.
+Now go with a simplification that is a little less tremendous: A song is syntactically correct if it contains no beats at all, or exactly one beat with no color, or exactly one beat with one color (no digits). Get the function working with that simplification, updating and adding to your test cases in your main routine.
+Continue in this manner, removing more and more simplifications until you're implementing the definition of a syntactically correct song as in the spec. There are a number of orders in which you could remove the simplifications; here's one such ordering:
+1.	No beats at all.
+2.	No beats, or exactly one beat with no color, or exactly one beat with one color (with no digits).
+3.	Like the previous simplification, but allow an optional single digit.
+4.	Like the previous simplification, but allow an optional one or two digits. At this point, your definition of syntactically correct song is zero or one beat.
+5.	Zero or more beats. At this point, you're implementing what the spec requires of this function.
+Now that hasCorrectSyntax is correctly implemented, proceed in a similar fashion to implement translateSong, starting with an extreme simplification, then working your way through successive removals of simpifying assumptions.
+As we said in the FAQ for Project 2, it might seem counterintuitive, but following this incremental approach to developing your program will take less total time than trying to write the whole thing at once.
+At each step where you've got something working, save a copy of the program. That way, if you mangle things up in the next phase, or you run out of time, you'll be able to turn in a program that will compile and pass at least some of our test cases. That beats getting a zero for correctness!
+2.	Can we assume the song parameter never contains blah blah blah? Can we assume the song parameter always contains blah blah blah?
+No! The song parameter might contain any string! Of course, if that string is not a syntactically correct song, the spec tells you what the function must do.
+3.	Is such-and-such a syntactically correct song?
+If you think it is, how many beats does it have? What are they? Are you sure they each fit the definition of a beat? Are you sure that every character in the supposed syntactically correct song string is part of some beat?
+
+
+
+
+
+Programming Assignment 3
+Heroic Grizblatnik
+Time due: 11:00 PM Monday, May 7
+Introduction
+Elbosoft has decided to develop Heroic Grizblatnik, a music rhythm game suspiciously similar to one formerly distributed by Activision. In this game, a player must press buttons on a plastic stick in accordance with the sequence of symbols that appears on a screen. (That description sounds pretty dry; the entertainment comes from the fact that the plastic stick is in the shape of a grizblat (an Elbonian guitar-like instrument), a familiar Elbonian folk song is playing, the symbols appearing on the screen represent finger positions on the neck of a grizblat as a model of the notes to be played in time with the beat of the song, and the player can fantasize that he/she is actually talented enough to be up on stage.) The symbols are five colored discs: green, red, yellow, blue, and orange. Here's an example of a similar game.
+A full Heroic Grizblatnik system has songs that require a player to press more than one button at the same time, simulating a chord. For this project, we will assume something simpler: All songs require pressing at most one button per beat. A press is either a normal note, where the player presses and releases the button on the same beat, or a sustained note, where the player's finger presses the button on one beat and then stays there, being lifted off the button at a later beat.
+We have acquired some Heroic Grizblatnik software that will display on a screen the sequence of colored discs for a song. The software requires as input a string of characters; each character is an instruction for what to display for one beat of the song. The characters are:
+•	g, r, y, b, or o, meaning to display a green, red, yellow, blue, or orange disc, representing a normal note.
+•	G, R, Y, B, or O, meaning to display a green, red, yellow, blue, or orange bar, representing a sustained note.
+•	x, meaning to display nothing for this beat, indicating that the player must not press any button for this beat.
+(Notice that the instructions gggb and GGGb are different. The first means "press and release the green button for each of the first three beats, then press and release the blue button", while the second means "press the green button on the first beat, hold it there until you release it at the end of the third beat, then press and release the blue button".)
+Now for the bad news: The game artists who encode the songs are used to expressing them a different way. For them, a song is expressed as a string like r//y/g3///o/, where a slash terminates every beat. This means "For the first beat, press and release red. Press nothing for the second beat. For the third beat, press and release yellow. Starting on the fourth beat, press and hold the green button three beats (the fourth, fifth, and sixth). For the seventh beat, press and release orange."
+Your assignment is essentially to translate a song from the artists' representation to the sequence of instructions the Heroic Grizblatnik software wants. For example, the song r//y/g3///o/ should be translated to the instructions rxyGGGo. //
+Let's define the syntax of the artists' song strings you are to translate. A color is one of these ten letters: G g R r Y y B b O o. A digit is one of the ten digit characters 0 through 9. A beat is any one of the following:
+•	a slash (/)
+•	a color followed by a slash
+•	a color followed by a digit followed by a slash
+•	a color followed by two digits followed by a slash
+A syntactically correct song is a sequence of zero or more beats. Every character in a non-empty syntactically correct song must be part of a beat (so, for example, r/y is not a syntactically correct song because the y is not part of a beat, since every beat must end with a slash). Here are some examples of syntactically correct songs:
+•	          zero beats
+•	G/
+•	r//Y/g3///o/
+•	y03///r10//////////
+•	///       three beats
+If we are to successfully translate a syntactically correct song, it must meet a few additional contraints that go beyond its just having correct syntax. (This is akin to a sentence like "The orange truth ate moonbeams." being syntactically correct English, but meaningless, since it violates semantic constraints like "truth has no color" and "moonbeams can't be eaten".) In particular, although songs like g3/r/y/ and r5// and r0/ are syntactically correct, once we try to interpret their first beats as sustained notes, they violate our concept of what a sustained note should mean.
+We therefore define a translatable song as one for which all of the following conditions hold:
+•	The song is syntactically correct.
+•	For all beats for which a sustained note is in effect, except the first, the beat consists only of a slash. (Thus, o/r3/// is translatable, but o/r3//y/ is not: Since we're restricted to playing one note at a time, then if we're sustaining a press of the red button, we can't also press the yellow button.)
+•	All beats for which a sustained note is in effect must be in the song; in other words, the song string can't end prematurely. (Thus, o/r3/// is translatable, but o/r3// is not.)
+•	The length of a sustained note cannot be 0 or 1. (We could have decided differently, but we're decreeing this. Thus, r03/// is translatable, but r0/ and r1/ are not.)
+Here is how a translatable song is translated into instructions for the Heroic Grizblatnik software: Each beat will translate into one instruction letter. Although the case of an instruction letter matters in the instruction string (distinguishing a normal note from a sustained note), the case of a letter in the syntactically correct song string is irrelevant. Beats are translated as follows:
+•	If no sustained note is in effect, a beat consisting of only a slash is translated as x.
+•	If no sustained note is in effect, a beat consisting of a color followed by a slash is translated as the lower case version of the color letter.
+•	If a beat consists of a color followed by one or two digits followed by a slash, the digit(s) are interpreted as a decimal number denoting the number of beats a sustained note is to be in effect, starting with the current beat. Each beat for which a sustained note is in effect is translated as the upper case version of the color letter that started the sustained note.
+(Notice that we do not define how a song that is not translatable is translated.) Here are some examples of how translatable songs are translated to instructions:
+•	The empty string translates to the empty string
+•	// translates to xx
+•	g/G/g/B/ translates to gggb
+•	g3///B/ translates to GGGb
+•	r//y/g3///o/ translates to rxyGGGo
+Your task
+For this project, you will implement the following two functions, using the exact function names, parameter types, and return types shown in this specification. (The parameter names may be different if you wish.)
+bool hasCorrectSyntax(string song)
+This function returns true if its parameter is a syntactically correct song (i.e., it meets the definition above), and false otherwise.
+int translateSong(string song, string& instructions, int& badBeat)
+If the parameter song is translatable, the function sets instructions to the translation of the song, leaves badBeat unchanged, and returns 0. In all other cases, the function leaves instructions unchanged. 
+If song is not syntactically correct, the function leaves badBeat unchanged and returns 1.
+ If song is syntactically correct but a beat specifies a sustained note of length less than 2, badBeat is set to the number of that beat (where the first beat of the whole song is number 1, the second is number 2, etc.), and the function returns 2.
+ If song is syntactically correct but while a sustained note is in effect, a beat not consisting of only a slash is present, badBeat is set to the number of that beat, and the function returns 3. 
+If song is syntactically correct but ends prematurely, badBeat is set to one more than the number of beats in the string, and the function returns 4.
+If the song is syntactically correct but not translatable for more than one reason, report the leftmost occurring problem. (For example, if song is r3//y/b0//o2/, set badBeat to 3 and return 3.) In a case like r3//b0/, you must set badBeat to 3, but it's your choice whether you return 2 (length of a sustained note must be at least 2) or 3 (third beat must consist of only a slash), since neither error occurs earlier than the other.)
+You must not assume that instructions and badBeat have any particular values at the time this function is entered.
+These are the only two functions you are required to write. (Hint: translateSong may well call hasCorrectSyntax.) Your solution may use functions in addition to these two if you wish. While we won't test those additional functions separately, using them may help you structure your program more readably. Of course, to test them, you'll want to write a main routine that calls your functions. During the course of developing your solution, you might change that main routine many times. As long as your main routine compiles correctly when you turn in your solution, it doesn't matter what it does, since we will rename it to something harmless and never call it (because we will supply our own main routine to thoroughly test your functions).
+Programming Guidelines
+The functions you write must not use any global variables whose values may be changed during execution (so global constants are allowed).
+When you turn in your solution, neither of the two required functions, nor any functions you write that they call, may read any input from cin or write any output to cout. (Of course, during development, you may have them write whatever you like to help you debug.) If you want to print things out for debugging purposes, write to cerr instead of cout. cerr is the standard error destination; items written to it by default go to the screen. When we test your program, we will cause everything written to cerr to be discarded instead — we will never see that output, so you may leave those debugging output statements in your program if you wish.
+The correctness of your program must not depend on undefined program behavior. For example, you can assume nothing about n's value at the point indicated, nor even whether or not the program crashes:
+	int main()
+	{
+	    string s = "Hello";
+	    int n;              // n is uninitialized
+	    s[5*n/n] = '!';     // undefined behavior!
+	    …
+Be sure that your program builds successfully, and try to ensure that your functions do something reasonable for at least a few test cases. That way, you can get some partial credit for a solution that does not meet the entire specification.
+There are a number of ways you might write your main routine to test your functions. One way is to interactively accept test strings:
+	int main()
+	{
+	    string d;
+	    for (;;)
+	    {
+	        cout << "Enter song: ";
+		getline(cin, d);
+		if (d == "quit")
+		    break;
+		cout << "hasCorrectSyntax returns ";
+		if (hasCorrectSyntax(d))
+		    cout << "true" << endl;
+	        else
+		    cout << "false" << endl;
+	    }
+	}
+While this is flexible, you run the risk of not being able to reproduce all your test cases if you make a change to your code and want to test that you didn't break anything that used to work.
+Another way is to hard-code various tests and report which ones the program passes:
+	int main()
+	{
+	    if (hasCorrectSyntax("g/b//"))
+		cout << "Passed test 1: hasCorrectSyntax(\"g/b//\")" << endl;
+	    if (!hasCorrectSyntax("g/z//"))
+		cout << "Passed test 2: !hasCorrectSyntax(\"g/z//\")" << endl;
+	    …
+This can get rather tedious. Fortunately, the library has a facility to make this easier: assert. If you #include the header <cassert>, you can call assert in the following manner:
+	assert(some boolean expression);
+During execution, if the expression is true, nothing happens and execution continues normally; if it is false, a diagnostic message is written to cerrtelling you the text and location of the failed assertion, and the program is terminated. As an example, here's a very incomplete set of tests:
+	#include <cassert>
+	#include <iostream>
+	#include <string>
+	using namespace std;
+
+	…
+
+	int main()
+	{
+	    assert(hasCorrectSyntax("r/"));
+	    assert( ! hasCorrectSyntax("r"));
+	    string instrs;
+	    int badb;
+	    badb = -999;  // so we can detect whether this gets changed
+	    assert(translateSong("r//g/", instrs, badb) == 0  &&  instrs == "rxg"  &&  badb == -999);
+	    instrs = "WOW";  // so we can detect whether this gets changed
+	    badb = -999;  // so we can detect whether this gets changed
+	    assert(translateSong("r", instrs, badb) == 1  &&  instrs == "WOW"  &&  badb == -999);
+	    assert(translateSong("r/y3//g/r/", instrs, badb) == 3  &&  instrs == "WOW"  &&  badb == 4);
+	    …
+	    cerr << "All tests succeeded" << endl;
+	}
+The reason for writing one line of output at the end is to ensure that you can distinguish the situation of all tests succeeding from the case where one function you're testing silently crashes the program.
+What to turn in
+What you will turn in for this assignment is a zip file containing these two files and nothing more:
+1.	A text file named hero.cpp that contains the source code for your C++ program. Your source code should have helpful comments that tell the purpose of the major program segments and explain any tricky code. The file must be a complete C++ program that can be built and run, so it must contain appropriate #include lines, a main routine, and any additional functions you may have chosen to write.
+2.	A file named report.docx or report.doc (in Microsoft Word format) or report.txt (an ordinary text file) that contains:
+a.	A brief description of notable obstacles you overcame.
+b.	A description of the design of your program. You should use pseudocode in this description where it clarifies the presentation.
+c.	A list of the test data that could be used to thoroughly test your program, along with the reason for each test. You don't have to include the results of the tests, but you must note which test cases your program does not handle correctly. (This could happen if you didn't have time to write a complete solution, or if you ran out of time while still debugging a supposedly complete solution.) Notice that most of this portion of your report can be written just after reading the requirements in this specification, before you even start designing your program.
+By May 6, there will be a link on the class webpage that will enable you to turn in your zip file electronically. Turn in the file by the due time above. Give yourself enough time to be sure you can turn something in, because we will not accept excuses like "My network connection at home was down, and I didn't have a way to copy my files and bring them to a SEASnet machine." There's a lot to be said for turning in a preliminary version of your program and report early (You can always overwrite it with a later submission). That way you have something submitted in case there's a problem later.
+

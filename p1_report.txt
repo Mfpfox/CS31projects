@@ -1,0 +1,30 @@
+
+In step 5 the integers I entered to output a nonsensical answer were: How many people were surveyed? 2
+How many of them approve of the U.S. getting into a trade war with China? 20
+How many of them disapprove of the U.S. getting into a trade war with China? 80
+
+1000.0% say they approve.
+4000.0% say they disapprove.
+ 
+And
+
+How many people were surveyed? 0
+How many of them approve of the U.S. getting into a trade war with China? 10
+How many of them disapprove of the U.S. getting into a trade war with China? 10
+
+inf% say they approve.
+inf% say they disapprove.
+
+
+COMPILE ERROR: I introduced 2 compile errors that prevented the compiler from making a compiled file to execute.  The 2 errors I introduced are 1) I deleted on line 7 the main () and 2) I deleted the last bracket on line 34. The program failed to compile on xcode and in g31, an executable file was not created. 
+
+In G31 and Xcode I got a similar error message from the Compile_error file: 
+For the missing main() I got this error: expected unqualified-id before '{' token
+ {
+ ^
+And for the missing last bracket of program I got this error: error: expected '}' at end of input
+         cout << "More people disapprove than approve." << endl;
+
+
+
+LOGIC ERROR: I introduced 2 logic errors. 1) I changed line 20 and disrupted the percent calculation "double pctApprove = 100.0 + numApprove ;"  By changing the multiplication sign to a plus and deleting the division of numApprove by numSurveyed, the math is nonsensical to where the answers can make percentiles greater than the max of 100%.  If you say 100 surveyed, and 20 approve, the percentile in output window will say 120% say they approve.  The 2nd error I made by changing line 21 to "double pctDisapprove = 100.0 * numDisapprove / numDisapprove;".  This causes the output window to always show that 100% of surveyed people disapprove (because dividing number by itself = 1 then *100). G31 created a executable file for the logic error file but the answers generated were nonsensical like they were in Xcode. 

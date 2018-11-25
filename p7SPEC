@@ -1,0 +1,716 @@
+Project 7 FAQ
+1.  I can't figure out what to pass as the first argument to the Dinosaur constructor. I know it's supposed to be a pointer to the Valley the Dinosaur is being added to.
+Valley::addDinosaur needs to create a new Dinosaur. Valley::addDinosaur is a member function of the Valley class. How does a member function of the Valley class talk about the Valley object it's operating on? If you answer this, you'll know what to do. (Why does that last sentence remind me of "Speak, friend, and enter" from The Fellowship of the Ring?)
+2.  My program seems to work, but crashes when it quits. What's happening?
+At the start of your Valley's destructor code, say
+        cerr << "Entering Valley destructor" << endl;
+and at the end, say
+        cerr << "Leaving Valley destructor" << endl;
+Is your destructor causing the crash? One possibility is that your destructor code itself is incorrect, but it's more likely that your destructor code is fine, but earlier in the program you were careless about managing your array of dinosaur pointers, especially when a dinosaur was destroyed. Running your program under g31 may help reveal more about this and other crashes.
+Programming Assignment 7
+Jurassic Valley
+Time due: 11:00 PM Thursday, June 7
+After several disastrous events, a theme park that features living dinosaurs has bred fierce-looking carnivorous dinosaurs with such poor vision and other senses that in the event of yet another mishap, they would pose no danger to a person unless they were right at the same position as the person. You were flying alone over the ocean when your airplane developed a serious mechanical problem. Spotting a tiny island, you parachuted out of your plane and landed in a small valley on the island as the plane crashed into the shark-infested sea. Thanks to your GPS locator, help will find you, but wait! The valley, surrounded by sheer cliffs, is where the dinosaurs are bred. Fortunately, you are armed with a tranquilizer gun, but there are so many of them...
+Well, that's the scenario for a new video game under development. Your assignment is to complete the prototype that uses character-based graphics.
+If you execute this Windows program or this Mac program or this Linux program, you will see the player (indicated by @) in a rectangular valley filled with dinosaurs (usually indicated by D). At each turn, the user will select an action for the player to take. The player will take the action, and then each dinosaur will move one step in a random direction. If a dinosaur lands on the position occupied by the player, the player will be eaten.
+This smaller Windows version or Mac version or Linux version of the game may help you see the operation of the game more clearly.
+At each turn the player may take one of these actions:
+1.  Stand. In this case, the player does not move or shoot.
+2.  Move one step up, down, left, or right. If the player attempts to move out of the valley (e.g., down, when on the bottom row), the result is the same as standing. It is allowable for the player to move to a position currently occupied by a dinosaur. If no dinosaur occupies that position after the dinosaurs have moved, the player survived the turn.
+3.  Shoot in one of the four directions up, down, left, or right. If there is at least one dinosaur at any distance in that direction, the nearest one in that direction is the candidate victim. If more than one dinosaur is nearest (i.e., they occupy the same position), only one dinosaur at that position is the candidate victim. With 1/3 probability, the candidate victim is tranquilized; with 2/3 probability, the shot is ineffective and no dinosaur is tranquilized. A tranquilized dinosaur will sleep for the rest of the game; since it will pose no further threat to the player, it is removed from the game.
+The game allows the user to select the player's action: u/d/l/r for movement, su/sd/sl/sr for shooting, and just hitting enter for standing. The user may also type q to prematurely quit the game.
+When it's the dinosaurs' turn, each dinosaur picks a random direction (up, down, left, or right) with equal probability. The dinosaur moves one step in that direction if it can; if the dinosaur attempts to move out of the valley, however, (e.g., down, when on the bottom row), it does not move. More than one dinosaur may occupy the same position; in that case, instead of D, the display will show a digit character indicating the number of dinosaurs at that position (where 9 indicates 9 or more). If after the dinosaurs move, a dinosaur occupies the same position as the player, the player is eaten.
+Your assignment is to complete this C++ program skeleton to produce a program that implements the described behavior. (We've indicated where you have work to do by comments containing the text TODO; remove those comments as you finish each thing you have to do.) The program skeleton you are to flesh out defines four classes that represent the four kinds of objects this program works with: Game, Valley, Dinosaur, and Player. Details of the interface to these classes are in the program skeleton, but here are the essential responsibilities of each class:
+Game
+•   To create a Game, you specify a number of rows and columns and the number of dinosaurs to start with. The Game object creates an appropriately sized Valley and populates it with a Player and the Dinosaurs.
+•   A game may be played.
+Valley
+•   When a Valley object of a particular size is created, it has no dinosaurs or player. In the Valley coordinate system, row 1, column 1 is the upper-left-most position that can be occupied by a Dinosaur or Player. (If a Valley were created with 10 rows and 20 columns, then the lower-right-most position that could be occupied would be row 10, column 20.)
+•   You may tell a Valley object to create or destroy a Dinosaur at a particular position.
+•   You may tell a Valley object to create a Player at a particular position.
+•   You may tell a Valley object to have all the dinosaurs in it make their move.
+•   You may ask a Valley object its size, how many dinosaurs are at a particular position, and how many dinosaurs altogether are in the Valley.
+•   You may ask a Valley object for access to its player.
+•   A Valley object may be displayed on the screen, showing the locations of the dinosaurs and the player, along with other status information.
+Player
+•   A Player is created at some position (using the Valley coordinate system, where row 1, column 1 is the upper-left-most position, etc.).
+•   You may tell a Player to stand, move in a direction, or shoot in a direction.
+•   You may tell a Player it has died.
+•   You may ask a Player for its position, alive/dead status, and age. (The age is the count of how many turns the player has survived.)
+Dinosaur
+•   A dinosaur is created at some position (using the Valley coordinate system, where row 1, column 1 is the upper-left-most position, etc.).
+•   You may tell a Dinosaur to move.
+•   You may ask a Dinosaur object for its position.
+The skeleton program you are to complete has all of the class definitions and implementations in one source file, which is awkward. Since we haven't yet learned about separate compilation, we'll have to live with it.
+Complete the implementation in accordance with the description of the game. You are allowed to make whatever changes you want to the private parts of the classes: You may add or remove private data members or private member functions, or change their types. You must not make any deletions, additions, or changes to the public interface of any of these classes — we're depending on them staying the same so that we can test your programs. You can, of course, make changes to the implementations of public member functions, since the callers of the function wouldn't have to change any of the code they write to call the function. You must not declare any public data members, nor use any global variables other than the global constants already in the skeleton code, except that you may add additional global constants if you wish. You may add additional functions that are not members of any class. The word friend must not appear in your program.
+Any member functions you implement must never put an object into an invalid state, one that will cause a problem later on. (For example, bad things could come from placing a dinosaur outside a valley.) Any function that has a reasonable way of indicating failure through its return value should do so. Constructors pose a special difficulty because they can't return a value. If a constructor can't do its job, we have it write an error message and exit the program with failure by calling exit(1);. (We haven't learned about throwing an exception to signal constructor failure.)
+What you will turn in for this assignment is a zip file containing this one file and nothing more:
+1.  A text file named dinos.cpp that contains the source code for the completed C++ program. This program must build successfully using both g31 and either Visual C++ or clang++, and its correctness must not depend on undefined program behavior. Your program must not leak memory: Any object dynamically allocated during the execution of your program must be deleted (once only, of course) by the time your main routine returns normally.
+Notice that you do not have to turn in a report describing the design of the program and your test cases.
+By Wednesday, June 6, there will be a link on the class webpage that will enable you to turn in your zip file electronically. Turn in the file by the due time above.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const int MAXEMPLOYEES = 100;
+
+  // This is an incomplete type declaration.  In order to declare Employee's
+  // constructor, we have to use the name Company, so the compiler needs to
+  // know that Company is the name of a type.  It doesn't need to know
+  // anything more about Company at this point.
+class Company;
+
+class Employee
+{
+  public:
+      // The last argument to Employee's constructor is a pointer to a
+      // Company object.  Employee's constructor will just stuff that
+      // into the m_company data member, which is of type pointer-to-Company
+      // Whoever calls this constructor (in this code, it's Company::hire
+      // that calls it) will supply that last argument.
+    Employee(string nm, int a, double sal, Company* cp);
+    string name() const;
+    void receiveBonus() const;
+    ...
+  private:
+    string m_name;
+    double m_salary;
+    int m_age;
+    Company* m_company;
+};
+
+class Company
+{
+  public:
+    Company();
+    ~Company();
+    void hire(string nm, double sal, int a);
+    void setBonusRate(double pct);
+    double bonusRate() const;
+    void giveBonuses() const;
+  private:
+    double m_bonusRate;
+    Employee* m_employees[MAXEMPLOYEES];
+    int m_nEmployees;
+};
+
+//////////////////////////////////////////////////////////////
+//  Employee implementations
+//////////////////////////////////////////////////////////////
+
+Employee::Employee(string nm, int a, double sal, Company* cp)
+{
+    m_name = nm;
+    m_salary = sal;
+    m_age = a;
+    m_company = cp;
+}
+
+string Employee::name() const
+{
+    return m_name;
+}
+
+void Employee::receiveBonus() const
+{
+      // This uses the m_company member to access the Company object
+      // associated with this Employee object in order to ask it
+      // what the bonus rate is.
+    cout << "Pay to the order of " << m_name << " the amount $"
+         << ( m_salary * m_company->bonusRate() ) << endl;
+}
+
+//////////////////////////////////////////////////////////////
+//  Company implementations
+//////////////////////////////////////////////////////////////
+
+Company::Company()
+{
+    m_bonusRate = 0;
+    m_nEmployees = 0;
+}
+
+Company::~Company()
+{
+    for (int k = 0; k < m_nEmployees; k++)
+        delete m_employees[k];
+}
+
+void Company::hire(string nm, double sal, int a)
+{
+      // In a member function of Company, the  this  pointer is a
+      // pointer to the Company object the function was called on.
+      // If the main routine said   myCompany.hire(......), then
+      // the  this  pointer points to myCompany.  If the main
+      // routine said  yourCompany.hire(......), then for that call
+      // the  this  pointer points to yourCompany.
+    m_employees[m_nEmployees] = new Employee(nm, a, sal, this);
+    m_nEmployees++;
+}
+
+void Company::setBonusRate(double pct)
+{
+    m_bonusRate = pct;
+}
+
+double Company::bonusRate() const
+{
+    return m_bonusRate;
+}
+
+void Company::giveBonuses() const
+{
+    for (int k = 0; k < m_nEmployees; k++)
+        m_employees[k]->receiveBonus();
+}
+
+//////////////////////////////////////////////////////////////
+//  main routine
+//////////////////////////////////////////////////////////////
+
+int main()
+{
+    Company myCompany;
+    myCompany.hire("Ricky", 80000, 34);
+    myCompany.hire("Lucy", 40000, 32);
+
+    Company yourCompany;
+    yourCompany.hire("Ethel", 90000, 33);
+
+    myCompany.setBonusRate(.02);
+    myCompany.giveBonuses();
+    ...
+}
+
+=============================================================
+
+Syntax notes:
+
+Use the dot operator  .  when what you have on the left is an
+  OBJECT or a REFERENCE TO AN OBJECT.
+
+Use the arrow operator  ->  when what you have on the left is a
+  POINTER TO AN OBJECT.
+
+The compiler will complain if you use the wrong one.  In fact, if you
+use the arrow operator when you should have used the dot operator, the
+Microsoft compiler will even say
+  did you intend to use '.' instead?
+and if you used dot when you should have used arrow, it will say
+  did you intend to use '->' instead?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Toy
+{
+    ...
+};
+
+class Pet
+{
+  public:
+    Pet(string nm, Toy* ft);
+    ~Pet();
+    void changeToy(Toy* ft);
+    ...
+  private:
+    string m_name;
+    Toy* m_favoriteToy;
+    ...
+};
+
+Pet::Pet(string nm, Toy* ft)
+{
+    m_name = nm;
+    m_favoriteToy = ft;
+}
+
+Pet::~Pet()
+{
+    delete m_favoriteToy;
+}
+
+void Pet::changeToy(Toy* ft)
+{
+    delete m_favoriteToy;
+    m_favoriteToy = ft;
+}
+
+void f(string s)
+{
+    Pet p(s, nullptr);
+    Pet q("Frisky", new Toy);
+    p.changeToy(new Toy);
+    q.changeToy(nullptr);
+    p.changeToy(new Toy);
+}
+
+int main()
+{
+    f("Fluffy");
+}
+
+
+
+
+
+
+
+
+
+
+// Class declaration for Target
+
+class Target
+{
+  public:
+    Target();
+    bool move(char dir);
+    int position() const;
+    void replayHistory() const;
+  private:
+      // Invariant:
+      //   history consists only of Rs and Ls
+      //   pos == # of Rs in history minus # of Ls in history
+    int pos;
+    string history;
+};
+
+// Implementations of Target's member functions
+
+Target::Target()
+{
+    pos = 0;
+    history = "";
+}
+
+bool Target::move(char dir)
+{
+    switch (dir)
+    {
+      case 'R':
+      case 'r':
+        pos++;
+        break;
+      case 'L':
+      case 'l':
+        pos--;
+        break;
+      default:
+        return false;
+    }
+    history += toupper(dir);
+    return true;
+}
+
+int Target::position() const
+{
+    return pos;
+}
+
+void Target::replayHistory() const
+{
+    for (int k = 0; k != history.size(); k++)
+        cout << history[k] << endl;
+}
+
+
+  // Implementations of some ordinary non-member functions
+
+void repeatMove(Target& x, int nTimes, char dir)
+{
+    for (int k = 1; k <= nTimes; k++)
+        x.move(dir);
+}
+
+void report(const Target& x)
+{
+    cout << "There's a target at position " << x.position() << endl;
+}
+
+int main()
+{
+    Target t;
+    t.move('R');
+    t.move('R');
+    t.move('L');
+    cout << t.position() << endl;  //  writes  1
+    t.replayHistory();
+
+    Target t2;
+    t2.move('L');
+
+    Target ta[3];
+    ta[0].move('L');
+    ta[1].move('R');
+    repeatMove(ta[2], 5, 'R');
+    report(ta[2]);  //  writes  There's a target at position 5
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ARRAYS:
+void doDateStuff()
+{
+    const int NMONTHS = 12; 
+
+    const int daysInMonth[NMONTHS] = {
+        31, 28, 31, 30, 31, 30,
+        31, 31, 30, 31, 30, 31
+    };
+
+    const string monthName[NMONTHS] = {
+        "January", "February", "March",  ...
+    };
+
+    ...
+    cout << "These months have 31 days:" << endl;
+    for (int k = 0; k < NMONTHS; k++)
+    {
+        if (daysInMonth[k] == 31)
+            cout << monthName[k] << endl;
+    }
+}
+
+=======================================================
+
+int main()
+{
+    const int MAX_NUMBER_OF_SCORES = 10000;
+    int scores[MAX_NUMBER_OF_SCORES];
+    int nScores = 0;
+    int total = 0;
+    cout << "Enter the scores (negative to quit):" << endl;
+    for (;;)
+    {
+        int s;
+        cin >> s;
+        if (s < 0)
+            break;
+        if (nScores == MAX_NUMBER_OF_SCORES)
+        {
+            cout << "I can handle only " << MAX_NUMBER_OF_SCORES
+                 << " scores!" << endl;
+            cout << "Continuing with just the first "
+                  << MAX_NUMBER_OF_SCORES << " values." << endl;
+            break;
+        }
+        total += s;
+        scores[nScores] = s;
+        nScores++;
+    }
+    if (nScores == 0)
+        cout << "There were no scores, so no stats" << endl;
+    else
+    {
+        double mean = static_cast<double>(total) / nScores;
+        cout << "The mean is " << mean << endl;
+        double sumOfSquares = 0;
+        for (int k = 0; k < nScores; k++)
+        {
+            double diff = scores[k] - mean;
+            sumOfSquares += diff * diff;
+        }
+        cout << "The std. deviation is "
+              << sqrt(sumOfSquares / nScores) << endl;
+    }
+}
+    
+===========================================================
+
+double computeMean(const int a[], int n);
+void setAll(int a[], int n, int value);
+
+int main()
+{
+    ...
+    const int MAX_NUMBER_OF_SCORES = 1000;
+    int scores[MAX_NUMBER_OF_SCORES];
+    int nScores = 0;
+    ... // fill up the array (perhaps partially)
+    double m = computeMean(scores, nScores);
+
+    int stuff[100];
+    ... // fill up the entire stuff array
+    double m2 = computeMean(stuff, 100);
+    ...
+    setAll(stuff, 10, 42);
+}
+
+double computeMean(const int a[], int n)
+{
+    if (n <= 0)
+        return 0;
+    int total = 0;
+    for (int k = 0; k < n; k++)
+        total += a[k];
+    return static_cast<double>(total) / n;
+}
+
+void setAll(int a[], int n, int value)
+{
+    for (int k = 0; k < n; k++)
+        a[k] = value;
+}
+
+
+
+
+
+
+
+LA workshop
+class Class{
+ public:
+     Class(string name) {
+         enrollment = 0;
+ }
+     bool addStudent(string name, int age)
+     {
+    Students[enrollment] = new Person(name, age);
+         //Students is an array of pointers initializes to Person object (dynamic)
+    enrollment++;
+    return true;
+     }
+     ~Class()
+     {
+         for(int i = 0; i < enrollment; i++)
+             delete students[i];
+     } //delete every student allocated
+     
+private:
+     Person* Students[MAX_STUDENTS];
+     int enrollment;
+     //Person is pointer to array[max] contains name,age members
+     
+     
+ }
+
+
+CODE TRACING EXAMPLES:
+
+#include <iostream>
+using namespace std;
+
+class A {
+    int foo = 0;
+    
+public:
+    int& getFoo() const {
+        return foo;
+    }
+    void printFoo() const {
+        cout << foo;
+    }
+};
+
+int main() {
+    A a;
+    
+    int bar = a.getFoo();
+    
+    cout << bar;
+    ++bar;
+    
+    a.printFoo();
+}
+
+
+
+Output:
+00
+
+
+ 
+#include <string>
+#include <iostream>
+using namespace std;
+
+class Person
+{
+    //private default
+    string first_name;
+    string last_name;
+    int m_age;
+public:
+    void set_name(string first, string second);
+    void set_age(int m_age);
+    string get_name() const;
+    string get_last_name() const;
+    int get_age() const;
+};
+
+
+void Person::set_name(string first, string second) {
+    first_name = first;
+    last_name = second;
+}
+
+void Person::set_age(int age)
+{
+    m_age = age;
+}
+
+string Person::get_name() const {
+    return first_name + " " + last_name;
+}
+
+string Person::get_last_name() const {
+    return last_name;
+}
+
+int Person::get_age() const {
+    return m_age;
+}
+
+Person have_baby(Person parent1, Person parent2) {
+    Person child;
+    child.set_name("Cade", parent1.get_name() + parent2.get_name());
+    //parent1.get_last_name()...extra member functions that do stuff
+    child.set_age(0);
+    return child;
+}
+
+int main() {
+    Person mommy; //make object mommy
+    mommy.set_name("Vickie", "Topmiller"); //mommy name = vickie topmiller
+    Person daddy;
+    daddy.set_name("Mike", "Mallett");
+    Person baby = have_baby(daddy, mommy);
+    cout << baby.get_age() << "  " << baby.get_name() << endl;
+}
+
+
+
+
+
+
+ 
+Output:
+0  Cade Mike MallettVickie Topmiller
+
+
+
+ 
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Enemy {
+    int secret;
+public:
+    Enemy() {
+        secret = -1;
+        cout << "You've made an Enemy!" << endl;
+    }
+    Enemy(int i) {
+        secret = i;
+        cout << "You've made Enemy " << i << endl;
+    }
+    ~Enemy() {
+        cout << "Destroying the enemy" << secret << endl;
+    }
+    void be_evil(int i) const {
+        cout << "I'm evil " << i << endl;
+    }
+    int get_secret() const {
+        return secret;
+    }
+};
+
+void foo(const Enemy& thisGuy) {
+    Enemy thatGuy;
+    thatGuy.be_evil(thisGuy.get_secret());
+}
+
+int main() {
+    Enemy booper;
+    Enemy bopper(3);
+    foo(bopper);
+    cout << "Done!" << endl;
+}
+
+
+
+ 
+Output
+
+You've made an Enemy!
+You've made Enemy 3
+You've made an Enemy!
+I'm evil 3
+Destroying the enemy -1 //destroying in inverse order they are created.. 1st destroy thatGuy when leaving foo
+Done!//end of main
+Destroying the enemy 3 //prints last 2 things made.. bopper(3)
+Destroying the enemy -1//prints booper()

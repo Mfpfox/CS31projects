@@ -1,0 +1,277 @@
+Spring 2018 CS 31
+Programming Assignment 5
+Word Stuffer
+Time due: 11:00 PM Wednesday, May 23
+Before you ask questions regarding this specification, see if your question has already been addressed by the Project 5 FAQ. And read the FAQ before you turn in this project, to be sure you didn't misinterpret anything. Use the Project 5 Stuffer to test your understanding of the stuffing rules.
+Implement a program that stuffs text from a plain text file into neatly arranged paragraphs with a particular maximum allowed line length. For example, if the desired maximum line length is 40 characters and the input text is
+It always does seem to me that I am doing more work than
+I should do. It is not that I object to the work, mind you;
+I like work: it fascinates me.       I can sit and look at it for hours.
+I love to keep     it by me: the idea of getting
+rid
+of it nearly breaks my heart. #P# You cannot give me too
+much work; to accumulate work has almost become
+
+
+a passion with me: my study is so full of it now, that there is hardly
+an inch of room for any more.
+then the output text will be
+It always does seem to me that I am
+doing more work than I should do.  It is
+not that I object to the work, mind you;
+I like work: it fascinates me.  I can
+sit and look at it for hours.  I love to
+keep it by me: the idea of getting rid
+of it nearly breaks my heart.
+
+You cannot give me too much work; to
+accumulate work has almost become a
+passion with me: my study is so full of
+it now, that there is hardly an inch of
+room for any more.
+from Jerome K. Jerome's Three Men in a Boat (To Say Nothing of the Dog).
+You are to implement the following function, whose job it is to do the stuffing:
+	int stuff(int lineLength, istream& inf, ostream& outf);
+You may name the parameters something else, but there must be three parameters of the indicated types in the indicated order. (The File I/Otutorial explains istream and ostream.) The parameters are
+•	an int with the desired maximum line length
+•	an already-opened input source you will read from (probably a file the caller opened).
+•	an already-opened output destination you will write to (probably either cout or an output file the caller created)
+The function must return an int with one of the following values:
+•	0 if is successful (i.e., neither of the following problems occurs)
+•	1 if any input word portion (defined below) is longer than the maximum line length
+•	2 if the desired maximum line length is less than 1
+In the case of the error situation that would cause the function to return 2, it must return 2 without writing any output.
+Your stuff function may, of course, call other functions you write to help it do its job. You can test your stuff function by calling it from a main routine of your choosing. Our grading tool will ignore your main routine by renaming it to something harmless. If you wish, your main routine could prompt the user for the file names and the line length. Alternatively, it could hardcode the names of the files to use and prompt for only a line length. Do whatever works best for you to help you test your function. Here is an example:
+	int main()
+	{
+            const int MAX_FILENAME_LENGTH = 100;
+            for (;;)
+            {
+                    cout << "Enter input file name (or q to quit): ";
+                    char filename[MAX_FILENAME_LENGTH];
+                    cin.getline(filename, MAX_FILENAME_LENGTH);
+                    if (strcmp(filename, "q") == 0)
+                        break;
+                    ifstream infile(filename);
+                    if (!infile)
+                    {
+                        cerr << "Cannot open " << filename << "!" << endl;
+                        continue;
+                    }
+		    cout << "Enter maximum line length: ";
+		    int len;
+		    cin >> len;
+		    cin.ignore(10000, '\n');
+		    int returnCode = stuff(len, infile, cout);
+		    cout << "Return code is " << returnCode << endl;
+	    }
+        }
+We use the following definitions in the stuffing rules:
+•	A word is a sequence of non-whitespace characters not immediately preceded or followed by a non-whitespace charcater. (The <cctype> function isspace tells you if a character is a whitespace character.) The string "swan's nest" contains two words, swan's and nest. Because of immediately preceding or following non-whitespace, swan, wa, 's, and nes are not words of that string.
+•	A word can be viewed as a sequence of one or more word portions. The first word portion in a word starts at the start of the word; subsequent word portions in a word start just after the last character of the previous word portion. The last character of a word portion is the first hyphen at or after the start of that word portion, or the end of the word if there is no hyphen after the start of that word portion. Here are examples, including some pathological ones:
+•		Word                Word portions
+•		Thames              Thames
+•		so-called           so- and called
+•		come-as-you-are     come-, as-, you-, and are
+•		so--called          so-, -, and called
+•		so-                 so-
+•		-so                 -,  and  so
+Here are the stuffing rules:
+1.	Fit as many word portions in an output line as you can without exceeding the line length. Output lines may well end up being different lengths, giving a "ragged-right" effect; your stuffer will not try to right-justify the text.
+2.	Words in an output line must normally be separated by one blank. However, if the last character of an output word is a period or a question mark, it must be separated from any following word on that output line by two blanks. The last word on an output line must not be followed by any blanks. The first word portion on an output line must not be preceded by any blanks. Blanks must not appear on an output line within any word. The last line of output must end with a newline, and there must be no output lines (not even empty ones) after the last word of the last paragraph. For example, if the last word in the input is bye, then the last four characters your function would write are 'b'  'y'  'e'  '\n'. That does not produce an empty last line. Writing this would produce an empty last line, in violation of this rule: 'b'  'y'  'e'  '\n'  '\n'.
+Notice that this rule implies that if a word containing a hyphen is broken at a hyphen to fit on an output line, the hyphen must be the last character of one output line, and the character after the hyphen must be the first character of the next output line.
+3.	If a word portion is longer than the line length, as much as will fit must be on an output line by itself. The rest of that word portion must begin the next output line (and, of course, is subject to similar splitting if it's too long). If this situation ever occurs, your function continues stuffing, but it must eventually return 1 instead of 0 to its caller. Notice that this is the only situation where a word is allowed to be split across lines other than at a hyphen.
+4.	The input word #P# is not to be processed as a word according to the above rules; instead, it indicates a paragraph break. The first word in the input following a paragraph break will be the first word of a new paragraph in the output. If a paragraph has already been output, the new paragraph must be separated from the one that precedes it by an empty line (i.e., a line with no characters other than the terminating newline). The very first output paragraph must not be preceded by an empty line. The very last output paragraph must not be followed by an empty line. Two or more consecutive #P# words in the input are treated as just one paragraph break. Notice that banjo#P# is one eight-character word; it does not cause a paragraph break, because in that string, #P# is not a word because of the immediately preceding non-whitespace character o.
+Notice that these rules imply that if the line length is valid but the input contains no words, stuff must return 0 without writing any output whatsoever.
+Your stuff function and any functions you write that it calls directly or indirectly must not use any std::string objects. If you need to use a string, use a C string. Your function may assume that no input line will be 140 or more characters long (i.e., we will not test it with input lines that long).
+This project is doable without assuming any upper limit for the output line length (the first parameter of stuff) — rather than storing the parts of an output line in a C string to be written later, you instead write them as soon as you can. However, some people may not figure out how to do that, so we'll give you a choice. If the first parameter of stuff is greater than 300, your implementation of stuff must either:
+•	return 2 without writing any output; or
+•	stuff the text using the indicated line length, returning 0 or 1 as appropriate (i.e., your algorithm doesn't impose any upper limit on the output line length). Implementing this choice correctly (instead of returning 2 and producing no output) is worth 5 bonus points.
+(Although the program you turn in must not use any C++ strings, only C strings, you might want to consider this development strategy: Ignore this restriction at first, and develop a working solution that uses C++ strings. After you've ironed out the issues in writing the stuffer, save a backup, and then convert your using C++ strings to using C strings instead. This approach helps you avoid confusing the mistakes in your use of C strings with the mistakes in your stuffing algorithm, so might make debugging easier.)
+Your stuff function and any functions you write that it calls directly or indirectly must not read from any source other than the istreampassed as the second parameter and must not write to any destination other than the ostream passed as the third parameter, except that you may write anything you want to cerr. Our grading tool will discard anything written to cerr, so feel free to use it for debugging purposes.
+The program you turn in must build successfully under both g32 and either Visual C++ or clang++, and its correctness must not depend on undefined program behavior. Your program could not, for example, assume anything about s's value in the following, or even whether or not the program crashes:
+	void f()
+	{
+	    char s[6];
+	    strcpy(s, "Thames");  // s is too short for 6+1 chars
+	    …
+What you will turn in for this assignment is a zip file containing these two files and nothing more:
+1.	A text file named stuff.cpp that contains the source code for your C++ program. Your source code should have helpful comments that tell the purpose of the major segments of your function and explain any non-obvious code.
+Try to ensure that your program does something that meets the spec for at least a few test cases. That way, you can get some partial credit for a program that does not meet the entire specification.
+2.	A file named report.docx or report.doc (in Microsoft Word format), or report.txt (an ordinary text file) that contains:
+a.	A brief description of notable obstacles you overcame.
+b.	A description of the design of your project. Use pseudocode where it clarifies the presentation. Someone reading your description should be able to determine what the responsibilities of the functions you wrote are. If someone had to modify your code later, could they from your description readily find in your program the approximate location of the code that, for example, handles a word portion not fitting on a line?
+c.	A list of the test data that could be used to thoroughly test your function, along with the reason for each test case (e.g. "word broken at hyphen" or "two spaces after period"). You must note which test cases your program does not handle correctly. (This could happen if you didn't have time to write a complete solution, or if you ran out of time while still debugging a supposedly complete solution.)
+By May 22, there will be links on the class webpage that will enable you to turn in your zip file electronically. Turn in the file by the due time above. Give yourself enough time to be sure you can turn something in, because we will not accept excuses like "My network connection at home was down, and I didn't have a way to copy my files and bring them to a SEASnet machine." There's a lot to be said for turning in a preliminary version of your program and report early (You can always overwrite it with a later submission). That way you have something submitted in case there's a problem later. Notice that most of the test data portion of your report can be written from the requirements in this specification, before you even start designing your program.
+
+Project 5 FAQ
+1.	I'm overwhelmed. How do I start?
+As we have repeatedly said, develop incrementally. Simplify the problem to a bare minimum by discarding most details, get that working, and gradually add functionality. Here's a possible plan. When following this plan, do not proceed to the next step until you are sure the current step is correct. The most common cause of excessive time spent in CS 31 projects is your trying to write and debug too much code at one time.
+1.	Write a main function that opens a file for input and tells you if it was successful or not. (See the File I/O writeup.)
+2.	Enhance that main function to read characters from the file and write them to cerr.
+3.	Change that main function to open a file for input (verifying it was successful) and pass the open input stream to the stufffunction. Your stuff function does nothing more than read characters from that file and write them to cerr; it does nothing with its first and third parameters. Get through this step before TA and UPE/TBP office hours help ends for the week. You don't want to waste time on the weekend fighting with input file issues.
+4.	Continue by considering this advice.
+Add capabilities to your code bit by bit. Always tackle only one little improvement at a time. Make a safe copy of your working code at the end of each improvement, so you can back up to it if you mess up the next step badly.
+It's a dead certainty that someone who does not start early and does not develop in small increments will spend a tremendous amount of time on this project and may well end up with something that fails most test cases. Don't be that person. If you follow our advice, you will spend less time and end up with a more correct program than that person you don't want to be.
+
+
+
+Project 5 Advice
+Project 5 may look pretty intimidating, but with a little thought, it can be divided into manageable parts. To begin with, let's try an example by hand to gain some insight. Suppose the maximum line length is 10 and the input is
+	Let's
+	    check    what
+	 happens.  #P#
+
+	Wow.
+The first word, Let's will be at the start of a new paragraph. The next word, check, with a preceding blank won't fit on that line, so we should write a newline. After writing that word, the next word, what will go ... Wait a minute — in figuring out what do do with each word of the input, we're not even paying attention to details about how the words are separated in the actual input (with one space, more spaces, a newline, etc.). That's an important realization: The part of the program that figures out what to do with each word cares only about the following sequence:
+	Word: Let's
+	Word: check
+	Word: what
+	Word: happens.
+	Paragraph break
+	Word: Wow.
+	End of file
+(Let's call each item in that sequence a token.) The stuffing part of the program doesn't care about exactly how that sequence of tokens actually appears in the input. So that suggests a separation of concerns, where one part of the program conceptually turns the input characters into the sequence of tokens above, while the other takes that sequence and produces the stuffed output.
+The stuffer might then be constructed roughly as follows:
+	for (;;)
+	{
+	    Attempt to get the next token
+	    if end of file
+	        break;
+	    if it's a paragraph break
+	        process paragraph break
+	    else // an ordinary word
+	        process that word
+	}
+A function that gets the next token would need to deliver two results: whether the next interesting thing in the input is a word (including a paragraph break) or whether the end of file has been reached; and if there is a word, the text of the word. We could do this in a number of ways; one would be that the function returns a bool (e.g., false for end of file, true for word) and has a C string parameter that it fills with the text of the word if the token is a word.
+It turns out that such a function can be nicely implemented by having it read the input character by character (using get). Consume whitespace. If we don't hit end of file but instead hit the start of a word, then collect the characters of the word into the C string.
+We should test this function by writing a simple main routine that repeatedly calls it and displays the result of each call, perhaps in a manner like the example above. Once we get it working, we now have a reliable routine that abstracts away the details of exactly how the input is laid out, so that the rest of the program doesn't have to care about that.
+When writing the part of the program that does the stuffing, it helps to work out our ideas by ignoring details in the spec. For our first cut, we ignore the rule about two spaces after certain punctuation, ignore hyphenated words being special, ignore treating words longer than the line length correctly, and ignore putting an empty line between output paragraphs. (Such a solution would earn about 2/3 of the correctness points for this project.) Once we get something working correctly under simplified rules, we can start adding each feature that we ignored, one at a time, making sure it works correctly before we add the next feature.
+
+
+
+File I/O
+In order to read input from a file instead of from the keyboard, or write output to a file instead of to the screen, you must use the C++ facilities for file input and/or output. To begin with, use these headers:
+	#include <iostream>
+	#include <fstream>
+Including the <fstream> header defines two types: std::ifstream, the input file stream type, and std::ofstream, the output file stream type. For the rest of this tutorial, assume we've said using namespace std; so that we can leave off the std::.
+Output
+Let's examine output first, since it's simpler. If we want to write output to a file named results.txt, we create an ofstream object attached to that file, and write to that object. Here is sample code:
+	ofstream outfile("results.txt");   // outfile is a name of our choosing.
+	if ( ! outfile )		   // Did the creation fail?
+	{
+	    cerr << "Error: Cannot create results.txt!" << endl;
+	    ... return with failure ...   
+	}
+	outfile << "This will be written to the file" << endl;
+	outfile << "2 + 2 = " << 2+2 << endl;
+The first line creates an ofstream object named outfile (which we could have called whatever we wanted) and attempts to attach it to the file named results.txt. If results.txtdoes not already exist, it will be created; otherwise, the old contents of that file are wiped out so that what this program writes will be the new contents of the file.
+If you specify a complete path name, like "C:/CS31/P5/results.txt" (note the use of forward slashes), the file will be in the folder you'd expect, C:\CS31\P5. If you do not specify a complete path name and you've launched the program from the Visual Studio environment, the file will be in the same folder as your C++ source file; if you're using Linux, the file will be in the current directory; if you're using Xcode, the file will be in the yourProject/DerivedData/yourProject/Build/Products/Debug folder, which is a good reason to give a simpler complete pathname like "/Users/yourUsername/CS31/P5/results.txt" or "/Users/yourUserName/Desktop/results.txt".
+It's possible the attempt to create the file may fail. If so, the stream object outfile knows internally that it is in a failure state instead of a good state. You can test the state of the stream: the expression !outfile yields true if outfile is in a failure state, and false otherwise.
+If the file was successfully created, you may write to it just as you would to cout or cerr.
+Input
+If we want to read input from a file instead of the keyboard, we create an ifstream object attached to that file and read from that object. If the file doesn't already exist, the ifstreamobject will be in a failure state.
+	ifstream infile("data.txt");    // infile is a name of our choosing
+	if ( ! infile )		        // Did opening the file fail?
+	{
+	    cerr << "Error: Cannot open data.txt!" << endl;
+	    ... return with failure ...   
+	}
+As with output files, if you specify a complete path name, like "C:/CS31/P5/data.txt" (note the use of forward slashes), the program will look for the file in the folder you'd expect, C:\CS31\P5. If you do not specify a complete path name, the program will look in the same folder it would create a file in if you didn't supply a complete path name (see the Output section above).
+We can now read from the file by reading from the stream infile. There are a number of ways we can read from the stream, but only one or two will be useful for Project 5. To read an integer from the file (not useful for Project 5):
+	int k;
+	infile >> k;
+	  // If you want to consume and ignore the rest of the line the
+	  // number is found on, follow this with
+	infile.ignore(10000, '\n');
+To read a std::string (not useful for your final version of Project 5, because you're not allowed to use std::strings):
+	std::string s;
+	infile >> s;         // read the next word into s
+	  // or
+	getline(infile, s);  // read a whole line into s
+To read the next character from the input, whether it's a letter, blank, newline, or whatever:
+	char c;
+	infile.get(c);
+This is useful for Project 5 if you choose to process the input character by character. Some people will use an approach that reads one line at a time into a C string:
+	const int MAX = 140;
+	char line[MAX];
+	infile.getline(line, MAX);
+The last statement above reads the next line from the file and stores it into the array named line. The newline at the end of the line is consumed from the input, but not stored in the array. A zero byte to mark the end of the C string is stored instead. For example, if the input line contained the three characters DOG followed by a newline, we would end up with:
+	line[0] == 'D'
+	line[1] == 'O'
+	line[2] == 'G'
+	line[3] == '\0'
+If the input line contained exactly MAX-1 characters before the newline, then the entire line would be read, the MAX-1 characters stored, and '\0' stored just after them, completely filling the array. If the line had MAX or more characters before the newline, only the first MAX-1 characters would be read and stored in the array, '\0' would be stored just after them (completely filling the array), and the input stream object will internally record that it is in a failure state (because it could not fit a complete line into the array). We promise that for Project 5, we will not supply any input lines whose length exceeds the guarantee in the spec.
+When reading input, there's a possibility that the operation will fail because there are no more characters in the file to be read (i.e., we have encountered the end of the file). This leads to a common idiom for reading and processing every line of a file, one by one:
+	char line[MAX];
+	while ( infile.getline(line, MAX) )
+	{
+	    ... process line
+	}
+The expression in the while loop will attempt to read the next line from the file, putting the stream in a failure state if the attempt fails. It then yields true if the operation didn't fail. Therefore, we leave the loop only when we hit end of file or read a line that's too long to fit into the array. (The function you'll write for Project 5 does not have to worry about the latter situation.)
+If your preference is to process the input file character by character instead of line by line, you'd say
+	char c;
+	while ( infile.get(c) )
+	{
+	    ... process c
+	}
+The get function will fail if there is no character in the input (i.e., we've reached end of file), in which case we leave the loop.
+Caution: Some misinformed people mistakenly believe that the pattern for reading input until end of file is while (!infile.eof()) { infile.get(c); ... process c ... }. This is wrong! (If you care why, it's because the eof member function does not return true until after an attempt to read past the end of file is made.)
+Stream parameters
+Suppose we wanted to write a function that writes some output to either a file or to the screen, at the option of the caller of the function. We can do this by having the function accept as a parameter a reference to the desired output stream:
+	void greet(ostream& outf)    // outf is a name of our choosing
+	{
+	    outf << "Hello" << endl;
+	}
+Notice that the type named in the parameter declaration is ostream, not ofstream, and that the parameter is passed by reference. An ostream reference can refer to any kind of output stream: to cout or to any ofstream attached to a file. Here's an example:
+	int main()
+	{
+	    ofstream outfile("greeting.txt");
+	    if ( ! outfile )
+	    {
+	        cerr << "Error: Cannot create greeting.txt!" << endl;
+	        return 1;
+	    }
+	    greet(outfile); // writes Hello to the file greetings.txt
+	    greet(cout);    // writes Hello to the screen
+	}
+Similarly, if we wanted to have a function read input from either a file or the keyboard, we'd have it take a parameter that is a reference to a general input stream (an istream):
+	int countLines(istream& inf)   // inf is a name of our choosing
+	{
+	    int lineCount = 0;
+	    string line;
+	    while (getline(inf, line))
+		    lineCount++;
+	    return lineCount;
+	}
+
+	int main()
+	{
+	    ifstream infile("data.txt");
+	    if ( ! infile )
+	    {
+	        cerr << "Error: Cannot open data.txt!" << endl;
+	        return 1;
+	    }
+	    int fileLines = countLines(infile);  // reads from the file data.txt
+	    cout << "data.txt has " << fileLines << " lines." << endl;
+	    cout << "Type lines, then ctrl-Z (Windows) or ctrl-D (UNIX):" << endl;
+	    int keyboardLines = countLines(cin); // reads from keyboard
+	    cout << "You typed " << keyboardLines << " lines." << endl;
+	}
+To indicate end of file for keyboard input (i.e., to tell the program that there's no more that will ever be typed in for the rest of this run of the program), type control-Z on a line by itself (Windows), or control-D on a line by itself (UNIX). That character does not get delivered to the program; instead, cin will internally record that it is in a failure state. Consider the countLines example above, when it is called with cin as the input stream that the parameter inf will refer to. When in response to the call to getline the user just types control-Z (or control-D), cin is put in a failure state, and the getline call yields false, so control leaves the loop.
+Here's a summary of some names the library defines:
+istream
+The general input stream type.
+ifstream
+The input file stream type; an ifstream object will be associated with a particular file. An ifstream object is one kind of istream.
+cin
+The input stream object associated with the keyboard. cin is another kind of istream object.
+ostream
+The general output stream type.
+ofstream
+The output file stream type; an ofstream object will be associated with a particular file. An ofstream object is one kind of ostream.
+cout
+The output stream object associated with the screen. cout is another kind of ostream object.
+The names ifstream and ofstream are defined by the header <fstream>. The other four are defined by the header <iostream>.
+

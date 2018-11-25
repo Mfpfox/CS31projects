@@ -1,0 +1,104 @@
+
+notable obstacles
+*trying to figure out in the int translate song function whether to translate as I go, or to do that after the string has been checked and it was syntactically corrent and translatable.  I decided to translate as I go since the loop functions i was writing to check if translatable could be useful in translation.
+
+*the boolean function was hard initially because I used if-else for the whole thing and it failed every test.  I realized later I was using the if-else statement wrong.  
+
+*once the boolean was working, back in int translatesong function, It was challenging to seperate return 3 for sustained note not consisting of just '/', from a premature ending return 4.  This was the hardest part of the project for me. 
+	**//checking if premature end without actually evaluating the position because that would be undefined
+
+*keeping position and beat count straight and knowing how they relate to each other. The total number of beats in the song was essentially because for return 4 premature, the badBeat needed to be +1 total number of beats.
+	** for digit cases, keeping position stable and creating new variable in loop to help check that / count is equal to digit value
+
+
+
+
+pseudocode on program design
+***in main function
+-badBeat and instructions assigned to something so i can tell when function modifies them
+-translateSong function called, switch test used to help me if proper return action happened
+
+
+***in translateSong function
+-local variables, totalNumBeats = total slashes in song, currentBeat = beat i am on while looping to return proper badBeat, digitValue for digit cases, translation is empty string that will be updated unless return for error event, int pos = position I am at in the string 
+-called CorrectSyntax function, continue if true
+-if its correct syntac but empty string check
+-called totalBeats(song) to count number of slashes in song
+-if syntac correct and not empty string continue to check translatability with for loop and position in string at 0
+-set local loop variable is_Color = isColor function output for that position, either true or false
+-if the current position is a /, translate to x, add to translation, continue
+-if its a color (current position) with a digit and / to the right..
+-check if digitValue is less than 2 and update badBeat return 2 if true
+-now check in for loop if the sustained beats are all '/'s
+-translate position (which is held on color char in song) for each '/' found in sustained beat
+-if not a slash in sustained beat (only option based on correctSyntac function is color) then return 3 and update badBeat
+-END OF FOR LOOP for slash count single digit position is still at color, exited once color in sustained note or if s (representing position starting at first slash) reached the length of digit value making it correct
+-check if premature end and exit of above loop based on end of string
+-if premature end, badBeat is totalNumBeats + 1 and return 4
+-now if at this position because no errors in the case of a color + digit + correct # slashes in sustained beat, update the position (still at color) to the last '/' at end of sustained note
+-case of color DOUBLE DIGIT + sustained note '/'s, this is exactly the same as above, except the position and s loop positions (checking sustained note) are adjusted to account for now 2 digits being next to color
+-at end of function, if at this point no errors were found and song is translatable
+-set instructions to translation and return 0
+
+
+***in total beats function, return integer
+-if at position in song, char == /, increase counter, and return counter value
+
+***in isColor function, return boolean
+-if tolower(c) == g r y b o, return true.  used to lower to normalize cases with capitalized colors
+
+***in hasCorrectSyntax function, return boolean
+-if song is empty string return true
+-now loop thru each position...
+-if its a /, continue
+-if its an alpha, continue, else return false
+-if its a color, continue, else return false
+-if its a color not followed by anything (end of string) return false
+-if its a color not followed by a / or digit, return false
+-if its color followed by slash, update position to slash following color, return to loop top
+-if its color followed by digit...
+-if digit last char in loop return false
+-if its a color digit and its not followed by either another digit or a slash, return false
+-if its a color then digit then slash, update position to slash following digit and continue to loop top
+-if its a color followed by two digits..
+-if the second digit is the end of string return false
+-if 2nd digit not followed by a slash, return false
+-if color and two digits followed by a slash, update position to that slash and continue to loop top
+-return true once looping thru string is complete and no conditions to return false met
+
+
+
+
+Test data for checking program
+***checking boolean function 
+-"" tested that empty string returns true
+-////// checking that slashes are returning true (first condition in my for loop going thru string)
+-$#@%^ checking the isalpha if statement
+-m/t/r/ checking color test
+-b/r/y checking that color should always be followed by something
+-b/R/y/ checking that isColor function recognizes capital letters
+-r0/0//r03////r10 checking is function only accepts color_digit_slash as beat or color_digit_digit_slash as beat
+-r03////r10 chekcing that digits need at least one slash following
+
+***checking translatability function
+-hi 
+-""
+-////// check if translated to xxxxxx
+-r/g/y/b/o/
+-R/G/Y/B/O/ checking if translation is correct
+-r00/ checking if digit value calulation working
+-r01/
+-r04//r/ checking if return 3 and badbeat correct
+-r04/// chekcing if premature return 4 works and badbeat correct
+-g/y/o5///r/
+-r/o4/y/
+-R02//G/Y/O07///G/R/ chekcing if double digit case works, and program knows return 3 vs return 4
+-r07//////g/ 
+then just ented in perfect songs to test translation
+-r//Y/g3///o/ 
+-r10//////////g5/////y03///
+ my program handles all the tests that I have run correctly
+
+
+
+

@@ -1,0 +1,217 @@
+Spring 2018 CS 31
+Project 6
+Get the Point?
+Time due: 11:00 PM Wednesday, May 30
+This project is designed to help you master pointers. To that end, you'll get the most out of it by working through the problems by hand. Only after that should you resort to running the programs (and stepping through them with the debugger) to check your understanding. Remember, on the final exam you'll have to be able to do problems like this by hand.
+This "project" is more like a homework. There are five problems. In problems that ask you to change code, make the few changes necessary to fix the code without changing its overall approach. For example, don't fix the program in problem 1a by changing it to
+	int main()
+	{
+	    cout << " 30 20 10" << endl;
+	}
+1.	The subparts to this problem involve errors in the use of pointers.
+a.	This program is supposed to write  30 20 10, but it doesn't. Find all of the bugs and show a fixed version of the program:
+b.	    int main()
+c.	    {
+d.	        int arr[3] = { 5, 10, 15 };
+e.	        int* ptr = arr;
+f.	
+g.	        *ptr = 10;          // set arr[0] to 10
+h.	        *ptr + 1 = 20;      // set arr[1] to 20
+i.	        ptr += 2;
+j.	        ptr[0] = 30;        // set arr[2] to 30
+k.	
+l.	        while (ptr >= arr)
+m.	        {
+n.	            ptr--;
+o.	            cout << ' ' << *ptr;    // print values
+p.	        }
+q.		cout << endl;
+r.	    }
+s.	The findDisorder function is supposed to find the first item in an array that is less than the element preceding it, and set the p parameter to point to that item, so the caller can know the location of that item. Explain why this function won't do that, and show how to fix it. Your fix must be to the function only; you must not change the the main routine below in any way, yet as a result of your fixing the function, the main routine below must work correctly.
+t.	    void findDisorder(int arr[], int n, int* p)
+u.	    {
+v.	        for (int k = 1; k < n; k++)
+w.	        {
+x.	            if (arr[k] < arr[k-1])
+y.	            {
+z.	                 p = arr + k;
+aa.	                 return;
+bb.	            }
+cc.	        }
+dd.		p = nullptr;
+ee.	    }       
+ff.	        
+gg.	    int main()
+hh.	    {
+ii.	        int nums[6] = { 10, 20, 20, 40, 30, 50 };
+jj.	        int* ptr;
+kk.	
+ll.	        findDisorder(nums, 6, ptr);
+mm.		if (ptr == nullptr)
+nn.		    cout << "The array is ordered" << endl;
+oo.		else
+pp.		{
+qq.	            cout << "The disorder is at address " << ptr << endl;
+rr.	            cout << "It's at position " << ptr - nums << endl;
+ss.	            cout << "The item's value is " << *ptr << endl;
+tt.		}
+uu.	    }
+vv.	The hypotenuse function is correct, but the main function has a problem. Explain why it may not work, and show a way to fix it. Your fix must be to the main function only; you must not change the hypotenuse function in any way.
+ww.	    #include <iostream>
+xx.	    #include <cmath>
+yy.	    using namespace std;
+zz.	
+aaa.	    void hypotenuse(double leg1, double leg2, double* resultPtr)
+bbb.	    {
+ccc.	        *resultPtr = sqrt(leg1*leg1 + leg2*leg2);
+ddd.	    }
+eee.	
+fff.	    int main()
+ggg.	    {
+hhh.	        double* p;
+iii.	        hypotenuse(1.5, 2.0, p);
+jjj.	        cout << "The hypotenuse is " << *p << endl;
+kkk.	    }
+lll.	The match function is supposed to return true if and only if its two C string arguments have exactly same text. Explain what the problems with the implementation of the function are, and show a way to fix them.
+mmm.	      // return true if two C strings are equal
+nnn.	    bool match(const char str1[], const char str2[])
+ooo.	    {
+ppp.	        while (str1 != 0  &&  str2 != 0)  // zero bytes at ends
+qqq.	        {
+rrr.	            if (str1 != str2)  // compare corresponding characters
+sss.	                return false;
+ttt.	            str1++;            // advance to the next character
+uuu.	            str2++;
+vvv.	        }
+www.	        return str1 == str2;   // both ended at same time?
+xxx.	    }
+yyy.	
+zzz.	    int main()
+aaaa.	    {
+bbbb.	        char a[10] = "Shankar";
+cccc.	        char b[10] = "Shweta";
+dddd.	
+eeee.	        if (match(a,b))
+ffff.	            cout << "They're the same!\n";
+gggg.	    }
+hhhh.	This program is supposed to write 1 4 9 16 25 36 49 64 81 100 , but it probably does not. What is the program doing that is incorrect? (We're not asking you explain why the incorrect action leads to the particular outcome it does, and we're not asking you to propose a fix to the problem.)
+iiii.	    #include <iostream>
+jjjj.	    using namespace std;
+kkkk.	
+llll.	    int* computeSquares(int& n)
+mmmm.	    {
+nnnn.	        int arr[10];
+oooo.	        n = 10;
+pppp.	        for (int k = 0; k < n; k++)
+qqqq.	            arr[k] = (k+1) * (k+1);
+rrrr.	        return arr;
+ssss.	    }
+tttt.	
+uuuu.	    void f()
+vvvv.	    {
+wwww.	        int junk[100];
+xxxx.	        for (int k = 0; k < 100; k++)
+yyyy.	            junk[k] = 123400000 + k;
+zzzz.	    }
+aaaaa.	
+bbbbb.	    int main()
+ccccc.	    {
+ddddd.	        int m;
+eeeee.	        int* ptr = computeSquares(m);
+fffff.	        f();
+ggggg.	        for (int i = 0; i < m; i++)
+hhhhh.	            cout << ptr[i] << ' ';
+iiiii.	    }
+2.	For each of the following parts, write a single C++ statement that performs the indicated task. For each part, assume that all previous statements have been executed (e.g., when doing part e, assume the statements you wrote for parts a through d have been executed). For each part, do not use any variable names or string literals not mentioned in that part (e.g., if the part doesn't mention fp or "tuna", do not use fp or "tuna" in your answer).
+a.	Declare a pointer variable named fp that can point to a variable of type string.
+b.	Declare fish to be a 5-element array of strings.
+c.	Make the fp variable point to the last element of fish.
+d.	Make the string pointed to by fp equal to "yellowtail", using the * operator.
+e.	Without using the fp pointer, and without using square brackets, set the fourth element (i.e., the one at position 3) of thefish array to have the value "salmon".
+f.	Move the fp pointer back by three strings.
+g.	Using square brackets, but without using the name fish, set the third element (i.e., the one at position 2) of the fish array to have the value "loach".
+h.	Without using the * operator or the name fish, but using square brackets, set the string pointed to by fp to have the value "eel".
+i.	Using the == operator in the initialization expression, declare a bool variable named d and initialize it with an expression that evaluates to true if fp points to the string at the start of the fish array, and to false otherwise.
+j.	Using the * operator in the initialization expression, but no square brackets, declare a bool variable named b and initialize it to true if the string pointed to by fp is equal to the string immediately following the string pointed to by fp, and false otherwise.
+3.	
+a.	Rewrite the following function so that it returns the same result, but does not increment the variable ptr. Your new program must not use any square brackets, but must use an integer variable to visit each double in the array. You may eliminate any unneeded variable.
+b.	    double computeAverage(const double* scores, int nScores)
+c.	    {
+d.	        const double* ptr = scores;
+e.	        double tot = 0;
+f.	        while (ptr != scores + nScores)
+g.	        {
+h.	            tot += *ptr;
+i.	            ptr++;
+j.	        }
+k.	        return tot/nScores;
+l.	    }
+m.	Rewrite the following function so that it does not use any square brackets (not even in the parameter declarations) but does use the integer variable k. Do not use any of the <cstring> functions such as strlen, strcpy, etc.
+n.	    // This function searches through str for the character chr.
+o.	    // If the chr is found, it returns a pointer into str where
+p.	    // the character was first found, otherwise nullptr (not found).
+q.	
+r.	    const char* findTheChar(const char str[], char chr)
+s.	    {
+t.	        for (int k = 0; str[k] != 0; k++)
+u.	            if (str[k] == chr)
+v.	                return &str[k];
+w.	
+x.	        return nullptr;
+y.	    }
+z.	Now rewrite the function shown in part b so that it uses neither square brackets nor any integer variables. Your new function must not use any local variables other than the parameters. Do not use any of the <cstring> functions such as strlen,strcpy, etc.
+4.	What does the following program print and why? Be sure to explain why each line of output prints the way it does to get full credit.
+5.	    #include <iostream>
+6.	
+7.	    using namespace std;
+8.	
+9.	    int* minimart(int* a, int* b)
+10.	    {
+11.	        if (*a < *b)
+12.	            return a;
+13.	        else
+14.	            return b;
+15.	    }
+16.	
+17.	    void swap1(int* a, int *b)
+18.	    {
+19.	        int* temp = a;
+20.	        a = b;
+21.	        b = temp;
+22.	    }
+23.	
+24.	    void swap2(int* a, int *b)
+25.	    {
+26.	        int temp = *a;
+27.	        *a = *b;
+28.	        *b = temp;
+29.	    }
+30.	
+31.	    int main()
+32.	    {
+33.	        int array[6] = { 5, 3, 4, 17, 22, 19 };
+34.	
+35.	        int* ptr = minimart(array, &array[2]);
+36.	        ptr[1] = 9;
+37.	        ptr += 2;
+38.	        *ptr = -1;
+39.	        *(array+1) = 79;
+40.	
+41.	        cout << "diff=" << &array[5] - ptr << endl;
+42.	
+43.	        swap1(&array[0], &array[1]);
+44.	        swap2(array, &array[2]);
+45.	
+46.	        for (int i = 0; i < 6; i++)
+47.	            cout << array[i] << endl;
+48.	    } 
+49.	Write a function named deleteG that accepts one character pointer as a parameter and returns no value. The parameter is a C string. This function must remove all of the upper and lower case 'g' letters from the string. The resulting string must be a valid C string.
+Your function must declare no more than one local variable in addition to the parameter; that additional variable must be of a pointer type. Your function must not use any square brackets. Do not use any of the <cstring> functions such as strlen, strcpy, etc.
+    int main()
+    {
+        char msg[100] = "I recall the glass gate next to Gus in Lagos, near the gold bridge.";
+        deleteG(msg);
+        cout << msg;  // prints   I recall the lass ate next to us in Laos, near the old bride.
+    }
+Prepare your solutions to these homework problems as a single Word document named hw.doc or hw.docx, or a plain text file named hw.txt. Put that file in a zip file. By May 29, there will be a link on the class webpage that will enable you to turn in your zip file.
+

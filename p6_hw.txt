@@ -1,0 +1,292 @@
+1.
+(a)
+#include <iostream>
+using namespace std;
+
+
+int main()
+{
+    int arr[3] = {5, 10, 15};
+
+    const int MAX = 3;
+
+    int* ptr = &arr[0]; //initializing pointer to beginning of array, func parameter declaration
+
+    *ptr = 10; //dereferencing
+
+    *(ptr + 1) = 20;
+
+    *(ptr + 2) = 30; //pointer never moved
+
+    ptr += MAX; //(index positions are 0-2)
+
+    while(ptr > &arr[0]) //not >= because then out of bounds 
+    {
+        ptr--;
+        cout << ' ' << *ptr;
+    }
+    cout << endl;
+}
+
+(b) 
+This function doesnt work because the pointer ptr was passed by value to the function, and it needs to be passed by reference (function call: ptr, function def: int*& p).  if you dont pass by reference, when the function call ends...p pointer is cleared and ptr is not initialized to the correct address. The function returns strange address values if you dont pass by reference.
+
+
+int main()
+{
+    int nums[6] = {10, 20, 20, 40, 30, 50};
+    int* ptr;
+    
+    findDisorder(nums, 6, ptr);
+    
+    
+    
+    if (ptr == nullptr)
+        cout << "The array is ordered" << endl;
+    else
+    {
+        cout << "The disorder is at address " << ptr << endl;
+        cout << "It's at position " << ptr - nums << endl;
+        cout << "The item's value is " << *ptr << endl;
+    }
+}
+
+
+    void findDisorder(int arr[], int n, int*& p)
+    {
+        for (int k = 1; k < n; k++)
+        {
+            if (arr[k] < arr[k-1])
+            {
+                p = arr + k;
+                return;
+            }
+        }
+        p = nullptr;
+    }
+    
+
+(c)
+The problem with main function was that double p is a pointer. This function doesnt work because when the function call ends, the pointer remains uninitilized (it has no object to point at, similar to preceeding question above). the double p needs to remain a normal double object, that way the function can be passed the address to this object and the function can change the value of p by setting the value that resultPtr points at to the hypotenuse value.  By passing p as &p into function...its similar to passing by reference because while the pointer resultPtr is destroyed when the function call ends the object that it points to is not (p).  the function updates the object's value indirectly with the use of the pointer resultPtr.   
+
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+void hypotenuse(double leg1, double leg2, double* resultPtr)
+{
+    *resultPtr = sqrt(leg1*leg1 + leg2*leg2);
+}
+
+int main()
+{
+    double p;
+    hypotenuse(1.5, 2.0, &p);
+    cout << "The hypotenuse is " << p << endl;
+}
+
+(d)
+The problem with the match function is that in the while look, its comparing the pointer str1 with the char/int 0 and you cant compare things that are not the same type...it should compare the object value the pointer is on with the zero byte char '\0' or 0...i like seeing the zero byte.  The next problem is that if(str1 != str2) is comparing the addresses of str1 and str2... these addresses will always be different because they point to different arrays. To compare corresponding characters it should do if(*str1 != *str2)..deference.  the last problem with match is that you cannot compare c string with == like you can do with strings of type string.  instead you can compare if they both are the same size by checking if when the while loop ended, the pointers of each char array are on the zero byte. 
+
+#include <iostream>
+#include <cmath>
+#include <cstring>
+using namespace std;
+
+// return true if two C strings are equal
+bool match(const char str1[], const char str2[])
+{
+    while (*str1 != '\0'  &&  *str2 != '\0')  // zero bytes at ends
+    {
+        if (*str1 != *str2)  // compare corresponding characters
+            return false;
+        
+        str1++;            // advance to the next character
+        str2++;
+    }
+    if(*str1 == *str2) //end at same time?
+        return true;
+    else
+        return false;
+    
+}
+
+int main()
+{
+    char a[10] = "Shankar";
+    char b[10] = "Shweta";
+    
+    if (match(a,b))
+        cout << "They're the same!\n";
+   
+}
+
+(e)
+what is it doing that is incorrect: 
+
+The array that ptr is suppose to point to, gets deallocated from memory when the local function is exited because the array was declared inside the function.  a similar situation is happening in f(), because the local array junk there is filled in the function and then deallocated when you exit function. ptr never points to the array that use to store the correct value (1 , 4, 9 ..). in main() then when it tries to loop thru the (deallocated) array using the ptr pointer and incrementing off the pointer...it prints random memory addresses that are not at all consecutive.  
+
+so what its doing that is incorrect is, incrementing off a pointer that points to a random object in memory storing no object of interest to the user. 
+
+2. 
+
+a. Declare a pointer variable named fp that can point to a variable of type string.
+
+string* fp;
+
+b. Declare fish to be a 5-element array of strings.
+
+string fish[5];
+
+c. Make the fp variable point to the last element of fish.
+
+fp = fish + 4;
+
+d. Make the string pointed to by fp equal to "yellowtail", using the * operator.
+
+*fp = "yellowtail";
+
+e. Without using the fp pointer, and without using square brackets, set the fourth element (i.e., the one at position 3) of the fish array to have the value "salmon".
+
+*(fish + 3) = "salmon";
+
+f. Move the fp pointer back by three strings.
+
+fp -= 3;
+
+g. Using square brackets, but without using the name fish, set the third element (i.e., the one at position 2) of the fish array to have the value "loach".
+
+fp[1] = "loach";
+
+
+h. Without using the * operator or the name fish, but using square brackets, set the string pointed to by fp to have the value "eel".
+
+fp[0] = "eel";
+
+i. Using the == operator in the initialization expression, declare a bool variable named d and initialize it with an expression that evaluates to true if fp points to the string at the start of the fish array, and to false otherwise.
+
+bool d = (fp == fish);
+
+j. Using the * operator in the initialization expression, but no square brackets, declare a bool variable named b and initialize it to true if the string pointed to by fp is equal to the string immediately following the string pointed to by fp, and false otherwise.
+
+
+bool b = (*fp == *(fp + 1));
+
+
+
+3. 
+(a)
+double computeAverage(const double* scores, int nScores)
+{
+    double tot = 0;
+    for(int i = 0; i < nScores; i++)
+    {
+        tot += *(scores + i);
+    }
+    return tot/nScores;
+}
+
+(b)
+
+// This function searches through str for the character chr.
+// If the chr is found, it returns a pointer into str where
+// the character was first found, otherwise nullptr (not found).
+
+const char* findTheChar(const char* str, char chr)
+{
+   
+    for (int k = 0; *(str + k) != 0 ; k++)
+        if (*(str + k) == chr)
+            return str + k;
+    
+    return nullptr;
+}
+
+(c)
+const char* findTheChar(const char* str, char chr)
+{
+   
+    while(*str != 0)
+    {
+        if(*str == chr)
+            return str;
+
+        str++;
+    }
+    
+    return nullptr;
+}
+
+
+4.
+ int array[6] = { 5, 3, 4, 17, 22, 19 };
+
+main()
+line 1: declare and initializes array of integers
+line 2: declaring pointer named ptr thats intialized with return of function minimart
+
+minimart(array, &array[2]):
+line 0: pointer a points to first element of array, b points to 3rd element (position 2)
+line 1: if the value that a points to is less than the value that b points to, return a
+line 2: else return pointer b
+
+main()
+line 3: ptr points to position 2 of array, changes value at position 3 to 9, doesnt move pointer
+{ 5, 3, 4, 9, 22, 19 }
+line 4: moves pointer by 2 array element (now pointing to position 4)
+line 5: changes the value ptr points to from 22 to -1
+{ 5, 3, 4, 9, -1, 19 }
+line 6: changes the element at position 1  to 79
+{ 5, 79, 4, 9, -1, 19 }
+line 7: prints diff= (&array[5] - ptr) 1...this is because it is subtracting the address of last element in array from the address of element just before that aka where ptr is pointing..when you subtract these address the computer returns the difference between the 2 subscripts 5 - 4 = 1...if position 5 was address 1008 and ptr address is 1004 (int is 4 bytes) the computer translates 1008-1004 = 4 bytes into 1 because it knows each address is 4 bytes away for arrays of type int. 
+
+swap1()
+line 0: a points to beginning of array, b points to position 1 of array
+line 1: set temp pointer equal to a 
+line 2: sets a to point at same thing as b
+line 3: sets b to point at same thing as temp
+
+swap2()
+line 0: a points to start of array b points to 3rd element
+line 1: value that a points to set to value b points to
+line 2: value b points to set to value a points to
+{ 4, 79, 5, 9, -1, 19 }
+
+the function prints:
+diff=1
+4
+79
+5
+9
+-1
+19
+
+
+
+5.
+#include <iostream>
+using namespace std;
+
+void deleteG(char* m)
+{
+    char* e; //new variable of pointer type
+    while(*m != 0) //while not at end of string
+    {
+        if(*m == 'g' || *m == 'G') //if m value is a g
+        {
+            *m = *(m + 1); //set the value m points to, to the char value next to where m points
+            for(e = m + 1; *e != 0; e++) //e initialized to point at position next to m, break out when e points to end
+                *e = *(e+1); //moving all the chars over left by one to delete the G or g char
+        }
+        
+        m++; //after done looping with e pointer, update m pointer address to point to next element
+    }
+}
+
+int main()
+{
+    char msg[100] = "I recall the glass gate next to Gus in Lagos, near the gold bridge.";
+    deleteG(msg);
+    cout << msg;  // prints   I recall the lass ate next to us in Laos, near the old bride.
+}
+
